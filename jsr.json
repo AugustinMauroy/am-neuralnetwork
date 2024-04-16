@@ -1,0 +1,5 @@
+{
+    "$schema": "https://jsr.io/schema/config-file.v1.json",
+    "name": "@am/neuralnetwork",
+    "version": "0.1.0"
+}
