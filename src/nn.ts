@@ -1,5 +1,8 @@
 import { MathUtils } from "./math_utils.ts";
 
+/**
+ * Enum representing the available activation functions for the neural network.
+ */
 enum ActivationFunction {
   TANH,
   SIGMOID,
@@ -10,13 +13,55 @@ enum ActivationFunction {
 }
 
 interface NeuralNetworkConfig {
+  /**
+   * The size of the input layer.
+   */
   inputSize: number;
+  /**
+   * The size of the hidden layer.
+   */
   hiddenSize: number;
+  /**
+   * The size of the output layer.
+   */
   outputSize: number;
+  /**
+   * The learning rate of the neural network.
+   */
   learningRate: number;
+  /**
+   * The activation function to use in the neural network.
+   */
   activationFunction: ActivationFunction;
 }
 
+/**
+ * Class representing a neural network.
+ * The neural network is a feedforward neural network with one hidden layer.
+ * The neural network uses the Adam optimizer for training.
+ * The neural network supports the following activation functions:
+ * - Sigmoid
+ * - Tanh
+ * - ReLU
+ * - Linear
+ * - Tanh derivative
+ * - Softmax
+ * The neural network uses mean squared error as the loss function.
+ * The neural network uses the following hyperparameters:
+ * - beta1 = 0.9
+ * - beta2 = 0.999
+ * - epsilon = 1e-8
+ * @example
+ * const config = {
+ *  inputSize: 2,
+ *  hiddenSize: 2,
+ *  outputSize: 2,
+ *  learningRate: 0.01,
+ *  activationFunction: ActivationFunction.TANH,
+ * };
+ * 
+ * const nn = new NeuralNetwork(config, ActivationFunction.TANH);
+ */
 class NeuralNetwork {
   private inputSize: number;
   private hiddenSize: number;
@@ -29,7 +74,9 @@ class NeuralNetwork {
     hiddenToOutput: number[][];
   };
 
-  // Adam optimizer parameters
+  /**
+   * The optimizer parameters for the Adam optimizer.
+   */
   private optimizerParams: {
     inputToHiddenM: number[][];
     inputToHiddenV: number[][];
@@ -136,6 +183,11 @@ class NeuralNetwork {
     return outputs;
   }
 
+  /**
+    * Backpropagation algorithm to train the neural network.
+    * @param inputs The input data for the neural network.
+    * @param targets The target data for the neural network.
+    */
   public backpropagation(inputs: number[], targets: number[]): void {
     const hiddenOutputs: number[] = Array(this.hiddenSize).fill(0);
     const outputs: number[] = Array(this.outputSize).fill(0);
@@ -217,6 +269,26 @@ class NeuralNetwork {
     }
   }
 
+  /**
+   * Train the neural network using the Adam optimizer.
+   * @param trainingData The training data for the neural network.
+   * @param validationData The validation data for the neural network.
+   * @param numberOfIterations The number of iterations to train the neural network.
+   * @example
+   * const trainingData = [
+   * [[0, 0], [0]],
+   * [[0, 1], [1]],
+   * [[1, 0], [1]],
+   * [[1, 1], [0]],
+   * ];
+   * const validationData = [
+   * [[0, 0], [0]],
+   * [[0, 1], [1]],
+   * [[1, 0], [1]],
+   * [[1, 1], [0]],
+   * ];
+   * nn.train(trainingData, validationData, 1000);
+   */
   public train(
     trainingData: Array<[number[], number[]]>,
     validationData: Array<[number[], number[]]>,
@@ -247,6 +319,21 @@ class NeuralNetwork {
     this.weights.hiddenToOutput = bestWeightsHiddenToOutput;
   }
 
+  /**
+   * Calculate the loss of the neural network using the mean squared error loss function.
+   * @param data The data to calculate the loss on.
+   * @returns The loss of the neural network.
+   * @example
+   * const data = [
+   * [[0, 0], [0]],
+   * [[0, 1], [1]],
+   * [[1, 0], [1]],
+   * [[1, 1], [0]],
+   * ];
+   * const loss = nn.calculateLoss(data);
+   * console.log(loss);
+   * // Output: 0.25 (hypothetical value)
+   */
   public calculateLoss(data: Array<[number[], number[]]>): number {
     let totalLoss = 0;
     for (const [inputs, targets] of data) {
