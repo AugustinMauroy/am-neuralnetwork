@@ -261,4 +261,5 @@ class NeuralNetwork {
   }
 }
 
-export { NeuralNetwork, NeuralNetworkConfig, ActivationFunction };
+export { NeuralNetwork, ActivationFunction };
+export type { NeuralNetworkConfig };

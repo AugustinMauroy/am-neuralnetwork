@@ -3,9 +3,9 @@
   "name": "@am/neuralnetwork",
   "version": "0.1.0-beta.1",
   "exports": {
-    "neuralnetwork": "./src/neuralnetwork.ts"
+    "./neuralnetwork": "./src/nn.ts"
   },
   "publish": {
-    "include": ["LICENSE", "README.md", "src/**/*.ts"]
+    "include": ["LICENSE", "README.md", "src/**/*.ts", "jsr.json"]
   }
 }
