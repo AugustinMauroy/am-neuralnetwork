@@ -1,9 +1,10 @@
 {
   "$schema": "https://jsr.io/schema/config-file.v1.json",
   "name": "@am/neuralnetwork",
-  "version": "0.1.0-beta.2",
+  "version": "0.1.0",
   "exports": {
-    "./neuralnetwork": "./src/nn.ts"
+    "./neuralnetwork": "./src/nn.ts",
+    "nn": "./src/nn.ts"
   },
   "publish": {
     "include": ["LICENSE", "README.md", "src/**/*.ts", "jsr.json"]
