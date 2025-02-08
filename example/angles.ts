@@ -1,4 +1,4 @@
-import { NeuralNetwork, ActivationFunction } from "../src/nn.ts";
+import { ActivationFunction, NeuralNetwork } from "../src/nn.ts";
 
 // input is an angle in degrees
 // ouput is the quadrant the angle
@@ -13,7 +13,6 @@ const nn = new NeuralNetwork(
   },
   ActivationFunction.SIGMOID,
 );
-
 
 const trainingData = [] as { input: number[]; output: number[] }[];
 

@@ -59,7 +59,7 @@ interface NeuralNetworkConfig {
  *  learningRate: 0.01,
  *  activationFunction: ActivationFunction.TANH,
  * };
- * 
+ *
  * const nn = new NeuralNetwork(config, ActivationFunction.TANH);
  */
 class NeuralNetwork {
@@ -101,25 +101,31 @@ class NeuralNetwork {
 
     // Initialize the weights and optimizer parameters of the neural network with random values
     this.weights = {
-      inputToHidden: Array.from({ length: this.inputSize }, () =>
-        Array.from({ length: this.hiddenSize }, () => Math.random()),
+      inputToHidden: Array.from(
+        { length: this.inputSize },
+        () => Array.from({ length: this.hiddenSize }, () => Math.random()),
       ),
-      hiddenToOutput: Array.from({ length: this.hiddenSize }, () =>
-        Array.from({ length: this.outputSize }, () => Math.random()),
+      hiddenToOutput: Array.from(
+        { length: this.hiddenSize },
+        () => Array.from({ length: this.outputSize }, () => Math.random()),
       ),
     };
     this.optimizerParams = {
-      inputToHiddenM: Array.from({ length: this.inputSize }, () =>
-        Array.from({ length: this.hiddenSize }, () => 0),
+      inputToHiddenM: Array.from(
+        { length: this.inputSize },
+        () => Array.from({ length: this.hiddenSize }, () => 0),
       ),
-      inputToHiddenV: Array.from({ length: this.inputSize }, () =>
-        Array.from({ length: this.hiddenSize }, () => 0),
+      inputToHiddenV: Array.from(
+        { length: this.inputSize },
+        () => Array.from({ length: this.hiddenSize }, () => 0),
       ),
-      hiddenToOutputM: Array.from({ length: this.hiddenSize }, () =>
-        Array.from({ length: this.outputSize }, () => 0),
+      hiddenToOutputM: Array.from(
+        { length: this.hiddenSize },
+        () => Array.from({ length: this.outputSize }, () => 0),
       ),
-      hiddenToOutputV: Array.from({ length: this.hiddenSize }, () =>
-        Array.from({ length: this.outputSize }, () => 0),
+      hiddenToOutputV: Array.from(
+        { length: this.hiddenSize },
+        () => Array.from({ length: this.outputSize }, () => 0),
       ),
       t: 0,
     };
@@ -184,10 +190,10 @@ class NeuralNetwork {
   }
 
   /**
-    * Backpropagation algorithm to train the neural network.
-    * @param inputs The input data for the neural network.
-    * @param targets The target data for the neural network.
-    */
+   * Backpropagation algorithm to train the neural network.
+   * @param inputs The input data for the neural network.
+   * @param targets The target data for the neural network.
+   */
   public backpropagation(inputs: number[], targets: number[]): void {
     const hiddenOutputs: number[] = Array(this.hiddenSize).fill(0);
     const outputs: number[] = Array(this.outputSize).fill(0);
@@ -235,14 +241,11 @@ class NeuralNetwork {
         this.optimizerParams.hiddenToOutputV[i][j] =
           this.beta2 * this.optimizerParams.hiddenToOutputV[i][j] +
           (1 - this.beta2) * outputErrors[j] * outputErrors[j];
-        const correctedM =
-          this.optimizerParams.hiddenToOutputM[i][j] /
+        const correctedM = this.optimizerParams.hiddenToOutputM[i][j] /
           (1 - Math.pow(this.beta1, this.optimizerParams.t));
-        const correctedV =
-          this.optimizerParams.hiddenToOutputV[i][j] /
+        const correctedV = this.optimizerParams.hiddenToOutputV[i][j] /
           (1 - Math.pow(this.beta2, this.optimizerParams.t));
-        this.weights.hiddenToOutput[i][j] +=
-          (this.learningRate * correctedM) /
+        this.weights.hiddenToOutput[i][j] += (this.learningRate * correctedM) /
           (Math.sqrt(correctedV) + this.epsilon);
       }
     }
@@ -256,14 +259,11 @@ class NeuralNetwork {
         this.optimizerParams.inputToHiddenV[i][j] =
           this.beta2 * this.optimizerParams.inputToHiddenV[i][j] +
           (1 - this.beta2) * hiddenErrors[j] * hiddenErrors[j];
-        const correctedM =
-          this.optimizerParams.inputToHiddenM[i][j] /
+        const correctedM = this.optimizerParams.inputToHiddenM[i][j] /
           (1 - Math.pow(this.beta1, this.optimizerParams.t));
-        const correctedV =
-          this.optimizerParams.inputToHiddenV[i][j] /
+        const correctedV = this.optimizerParams.inputToHiddenV[i][j] /
           (1 - Math.pow(this.beta2, this.optimizerParams.t));
-        this.weights.inputToHidden[i][j] +=
-          (this.learningRate * correctedM) /
+        this.weights.inputToHidden[i][j] += (this.learningRate * correctedM) /
           (Math.sqrt(correctedV) + this.epsilon);
       }
     }
@@ -348,5 +348,5 @@ class NeuralNetwork {
   }
 }
 
-export { NeuralNetwork, ActivationFunction };
+export { ActivationFunction, NeuralNetwork };
 export type { NeuralNetworkConfig };

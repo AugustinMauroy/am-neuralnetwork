@@ -1,4 +1,4 @@
-import { NeuralNetwork, ActivationFunction } from "../src/nn.ts";
+import { ActivationFunction, NeuralNetwork } from "../src/nn.ts";
 
 const nn = new NeuralNetwork(
   {
@@ -47,6 +47,8 @@ console.log(`Accuracy: ${accuracy * 100}%`);
 validationData.forEach(({ input, output }) => {
   const prediction = nn.feedforward(input)[0];
   console.log(
-    `Input: ${input[0]} ${input[1]} Output: ${output[0]} Prediction: ${prediction}`,
+    `Input: ${input[0]} ${input[1]} Output: ${
+      output[0]
+    } Prediction: ${prediction}`,
   );
 });
