@@ -1,10 +1,11 @@
 {
   "$schema": "https://jsr.io/schema/config-file.v1.json",
   "name": "@am/neuralnetwork",
+  "description": "A simple neural network library for JavaScript and TypeScript.",
   "version": "0.2.0",
   "license": "MIT",
   "exports": {
-    "./": "./src/nn.ts",
+    ".": "./src/nn.ts",
     "./neuralnetwork": "./src/nn.ts",
     "./nn": "./src/nn.ts"
   },
