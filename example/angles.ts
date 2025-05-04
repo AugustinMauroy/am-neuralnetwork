@@ -1,7 +1,7 @@
 import { ActivationFunction, NeuralNetwork } from "../src/nn.ts";
 
 // input is an angle in degrees
-// ouput is the quadrant the angle
+// output is the quadrant the angle
 
 const nn = new NeuralNetwork(
   {

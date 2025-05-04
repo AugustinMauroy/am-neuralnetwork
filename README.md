@@ -12,7 +12,7 @@ deno, bun ...
 ## Simple xor example
 
 ```typescript
-import { ActivationFunction, NeuralNetwork } from "../src/nn.ts";
+import { ActivationFunction, NeuralNetwork } from "@am/neuralnetwork";
 
 const nn = new NeuralNetwork(
   {
