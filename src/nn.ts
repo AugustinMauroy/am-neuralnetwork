@@ -1,8 +1,3 @@
-/**
- * A module simple neural network implementation
- * @module
- */
-
 import { MathUtils } from "./math_utils.ts";
 
 /**
