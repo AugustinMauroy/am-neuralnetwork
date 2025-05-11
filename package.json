@@ -7,7 +7,6 @@
     "biome:lint:fix": "biome lint --fix ./",
     "biome:lint": "biome lint ./",
     "biome:ci": "biome ci ./",
-    "build": "tsc",
     "pre-commit": "node --run biome:lint:fix; node --run biome:format:fix",
     "test": "node --test tests/**/*.test.ts",
     "test:coverage": "node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=./coverage.lcov --test-reporter=spec --test-reporter-destination=stdout tests/**/*.test.ts",

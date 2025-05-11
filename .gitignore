@@ -1,2 +1,8 @@
+# Node
+node_modules
+
 # OSX
 .DS_Store
+
+# Test
+coverage.lcov
