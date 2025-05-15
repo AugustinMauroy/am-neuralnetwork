@@ -1,4 +1,6 @@
-name: Publish
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
+name: Publish on JSR
 
 on:
   release:
