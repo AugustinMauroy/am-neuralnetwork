@@ -1,8 +1,24 @@
 import { MeanSquaredError } from "../losses/mse.ts";
+import type { Optimizer } from "../optimizes/mod.ts";
 
+/**
+ * Represents a single layer in a neural network.
+ */
 export interface Layer {
+  /**
+   * Performs the forward pass of the layer.
+   * @param input The input data to the layer.
+   * @returns The output data from the layer.
+   */
   forward(input: number[][]): number[][];
-  backward(outputGradient: number[][]): number[][]; // Signature might need adjustment for specific layer needs
+
+  /**
+   * Performs the backward pass of the layer (backpropagation).
+   * @param outputGradient The gradient of the loss with respect to the output of this layer.
+   * @returns The gradient of the loss with respect to the input of this layer.
+   * Signature might need adjustment for specific layer needs.
+   */
+  backward(outputGradient: number[][]): number[][];
   // For a full training loop, layers might also need methods like:
   // getWeights(): any; // To get current weights for optimizer/saving
   // getGradients(outputGradient: number[][], layerInput: number[][]): any; // To calculate gradients for its weights
@@ -10,28 +26,69 @@ export interface Layer {
   // getConfig(): any; // For saving model architecture
 }
 
-// A more specific type for layers that have trainable weights.
+/**
+ * Represents a layer that has trainable weights and biases.
+ * Extends the base {@link Layer} interface.
+ */
 export interface TrainableLayer extends Layer {
-  getWeights(): Map<string, number[] | number[][]>; // Example: weights and biases
+  /**
+   * Retrieves the current weights and biases of the layer.
+   * @returns A map where keys are 'weights' or 'biases' and values are the corresponding matrices or vectors.
+   * Example: weights and biases
+   */
+  getWeights(): Map<string, number[] | number[][]>;
+
+  /**
+   * Calculates the gradients of the loss with respect to the layer's weights and biases.
+   * @param outputGradient The gradient of the loss with respect to the output of this layer.
+   * @param layerInput The input data that was fed into this layer during the forward pass.
+   * @returns A map containing the gradients for weights and biases.
+   * Gradients for weights and biases
+   */
   getWeightGradients(
     outputGradient: number[][],
     layerInput: number[][],
-  ): Map<string, number[] | number[][]>; // Gradients for weights and biases
+  ): Map<string, number[] | number[][]>;
+
+  /**
+   * Updates the layer's weights and biases.
+   * @param updatedWeights A map containing the new weights and biases to apply.
+   */
   updateWeights(updatedWeights: Map<string, number[] | number[][]>): void;
 }
 
-class Model {
+/**
+ * Represents a neural network model composed of a sequence of layers.
+ */
+export class Model {
+  /** @hidden The sequence of layers in the model. */
   private layers: Layer[] = [];
-  private optimizer!: Adam; // Assuming Adam optimizer for now
+  /** @hidden The optimizer used for training the model. */
+  private optimizer!: Optimizer;
+  /** @hidden The loss function used to evaluate the model's performance. */
   private lossFunction!: MeanSquaredError; // Assuming MeanSquaredError for now
+  /** @hidden A list of metrics to evaluate during training and testing. */
   private metrics: string[] = [];
 
+  /**
+   * Creates an instance of the Model.
+   */
   constructor() {}
 
+  /**
+   * Adds a layer to the model.
+   * @param layer The layer to add to the model.
+   */
   public addLayer(layer: Layer): void {
     this.layers.push(layer);
   }
 
+  /**
+   * Configures the model for training.
+   * @param optimizer The optimizer to use for training.
+   * @param lossFunction The loss function to use.
+   * @param metrics A list of metrics to evaluate.
+   */
   public compile(
     optimizer: any,
     lossFunction: MeanSquaredError,
@@ -42,6 +99,24 @@ class Model {
     this.metrics = metrics;
   }
 
+  /**
+   * Trains the model for a fixed number of epochs (iterations on a dataset).
+   *
+   * @param trainingData The input data for training.
+   * @param trainingLabels The target labels for training.
+   * @param epochs The number of epochs to train the model.
+   * @param batchSize The number of samples per gradient update.
+   * @param debugEpochEnabled Whether to log loss information after each epoch. Defaults to false.
+   * @returns A promise that resolves when training is complete.
+   *
+   * @example
+   * ```typescript
+   * const model = new Model();
+   * // ... add layers ...
+   * model.compile(new AdamOptimizer(), new MeanSquaredError(), ['accuracy']);
+   * await model.fit(trainingData, trainingLabels, 10, 32);
+   * ```
+   */
   public async fit(
     trainingData: number[][],
     trainingLabels: number[][],
@@ -128,6 +203,11 @@ class Model {
     }
   }
 
+  /**
+   * Generates output predictions for the input samples.
+   * @param inputData The input data for which to generate predictions.
+   * @returns The model's predictions.
+   */
   public predict(inputData: number[][]): number[][] {
     let currentOutput = inputData;
     for (const layer of this.layers) {
@@ -136,6 +216,12 @@ class Model {
     return currentOutput;
   }
 
+  /**
+   * Evaluates the model on a validation dataset.
+   * @param validationData The input data for validation.
+   * @param validationLabels The target labels for validation.
+   * @returns An object containing the loss and any configured metrics (e.g., accuracy).
+   */
   public evaluate(
     validationData: number[][],
     validationLabels: number[][],
@@ -176,6 +262,11 @@ class Model {
     return results;
   }
 
+  /**
+   * Saves the model's architecture, weights, and optimizer state.
+   * Note: This method is not fully implemented.
+   * @param filePath The path where the model will be saved.
+   */
   public save(filePath: string): void {
     console.warn("Model.save() is not fully implemented.");
     const modelState = {
@@ -210,7 +301,13 @@ class Model {
     }
   }
 
-  public static load(_filePath: string): Promise<Model> {
+  /**
+   * Loads a model from a file.
+   * Note: This method is not fully implemented and returns a new empty model.
+   * @param _filePath The path from which to load the model.
+   * @returns A new {@link Model} instance (currently empty).
+   */
+  public static load(_filePath: string): Model {
     console.warn(
       "Model.load() is not fully implemented and returns a new empty model.",
     );

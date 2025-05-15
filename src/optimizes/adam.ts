@@ -1,19 +1,42 @@
-export class Adam {
-  private learningRate: number;
+import { Optimizer } from "./optimizer.ts";
+
+/**
+ * Adam (Adaptive Moment Estimation) optimizer.
+ * Adam is an optimization algorithm that can be used instead of the classical
+ * stochastic gradient descent procedure to update network weights iteratively
+ * based on training data.
+ *
+ * It combines the advantages of two other extensions of stochastic gradient
+ * descent: Adaptive Gradient Algorithm (AdaGrad) and Root Mean Square Propagation (RMSProp).
+ */
+export class Adam extends Optimizer {
+  /** Exponential decay rate for the first moment estimates. */
   private beta1: number;
+  /** Exponential decay rate for the second moment estimates. */
   private beta2: number;
+  /** A small constant for numerical stability. */
   private epsilon: number;
+  /** Stores the first moment vector (moving average of the gradients). */
   private m: Map<string, number>;
+  /** Stores the second moment vector (moving average of the squared gradients). */
   private v: Map<string, number>;
+  /** Timestep, used for bias correction. */
   private t: number;
 
+  /**
+   * Creates an instance of the Adam optimizer.
+   * @param learningRate The learning rate. Defaults to `0.001`.
+   * @param beta1 The exponential decay rate for the first moment estimates. Defaults to `0.9`.
+   * @param beta2 The exponential decay rate for the second moment estimates. Defaults to `0.999`.
+   * @param epsilon A small constant for numerical stability. Defaults to `1e-8`.
+   */
   constructor(
     learningRate: number = 0.001,
     beta1: number = 0.9,
     beta2: number = 0.999,
     epsilon: number = 1e-8,
   ) {
-    this.learningRate = learningRate;
+    super(learningRate);
     this.beta1 = beta1;
     this.beta2 = beta2;
     this.epsilon = epsilon;
@@ -22,6 +45,12 @@ export class Adam {
     this.t = 0;
   }
 
+  /**
+   * Updates the weights based on the gradients using the Adam optimization algorithm.
+   * @param weights A map representing the current weights of the model, where keys are parameter names and values are their current values.
+   * @param gradients A map representing the gradients of the loss with respect to the weights, with the same structure as `weights`.
+   * @returns A new map with the updated weights.
+   */
   public update(
     weights: Map<string, number>,
     gradients: Map<string, number>,
@@ -34,18 +63,23 @@ export class Adam {
       const mKey = this.m.get(key) || 0;
       const vKey = this.v.get(key) || 0;
 
+      // Update biased first moment estimate
       const newM = this.beta1 * mKey + (1 - this.beta1) * gradient;
+      // Update biased second raw moment estimate
       const newV = this.beta2 * vKey + (1 - this.beta2) * gradient * gradient;
 
       this.m.set(key, newM);
       this.v.set(key, newV);
 
+      // Compute bias-corrected first moment estimate
       const mHat = newM / (1 - Math.pow(this.beta1, this.t));
+      // Compute bias-corrected second raw moment estimate
       const vHat = newV / (1 - Math.pow(this.beta2, this.t));
 
+      // Update parameters
       const weightUpdate = this.learningRate * mHat /
         (Math.sqrt(vHat) + this.epsilon);
-      updatedWeights.set(key, updatedWeights.get(key)! - weightUpdate);
+      updatedWeights.set(key, (updatedWeights.get(key) || 0) - weightUpdate);
     });
 
     return updatedWeights;

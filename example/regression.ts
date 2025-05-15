@@ -32,7 +32,7 @@ console.log(
   "Starting model training (conceptual, `fit` may not fully update weights)...",
 );
 // Using more epochs due to potentially slow convergence of SGD without full implementation
-await model.fit(trainingData, trainingLabels, 1000, 2, true); // 1000 epochs, batch size 2, debug epochs
+await model.fit(trainingData, trainingLabels, 1000, 2, false);
 console.log("Model training finished (conceptually).");
 
 // 6. Make predictions
