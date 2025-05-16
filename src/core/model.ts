@@ -127,7 +127,15 @@ export class Model {
 
 		for (let epoch = 0; epoch < epochs; epoch++) {
 			const epochLoss = 0;
-			// TODO: Implement proper data shuffling here for each epoch
+			// Shuffle training data and labels at the beginning of each epoch
+			for (let k = numSamples - 1; k > 0; k--) {
+				const j = Math.floor(Math.random() * (k + 1));
+				[trainingData[k], trainingData[j]] = [trainingData[j], trainingData[k]];
+				[trainingLabels[k], trainingLabels[j]] = [
+					trainingLabels[j],
+					trainingLabels[k],
+				];
+			}
 
 			for (let i = 0; i < numSamples; i += batchSize) {
 				const batchInputs = trainingData.slice(
