@@ -65,6 +65,15 @@ export class Model {
 	/** @hidden A list of metrics to evaluate during training and testing. */
 	private metrics: string[] = [];
 
+	/** @hidden Helper to check if a layer is trainable */
+	private isTrainableLayer(layer: Layer): layer is TrainableLayer {
+		return (
+			typeof (layer as TrainableLayer).getWeights === "function" &&
+			typeof (layer as TrainableLayer).getWeightGradients === "function" &&
+			typeof (layer as TrainableLayer).updateWeights === "function"
+		);
+	}
+
 	/**
 	 * Adds a layer to the model.
 	 * @param layer The layer to add to the model.
@@ -169,19 +178,116 @@ export class Model {
 				);
 
 				// 3. Backward pass
-				let currentGradient = dLdOutput;
+				let dLdOutput_currentLayer = dLdOutput; // Gradient of loss w.r.t. output of the final layer
+				const batchWeightGradients: {
+					layerIndex: number;
+					gradients: Map<string, number[] | number[][]>;
+				}[] = [];
+
 				for (let j = this.layers.length - 1; j >= 0; j--) {
 					const layer = this.layers[j];
-					const layerInput = layerOutputs[j]; // Input that went into this layer
-					currentGradient = layer.backward(currentGradient);
+					const layerInput = layerOutputs[j]; // Input that was fed to layers[j]
+
+					if (this.isTrainableLayer(layer)) {
+						// Calculate gradients of loss w.r.t. weights and biases of this layer
+						const weightGradients = layer.getWeightGradients(
+							dLdOutput_currentLayer,
+							layerInput,
+						);
+						batchWeightGradients.unshift({
+							layerIndex: j,
+							gradients: weightGradients,
+						});
+					}
+
+					// Propagate gradient to the previous layer
+					dLdOutput_currentLayer = layer.backward(dLdOutput_currentLayer);
 				}
 
-				// Conceptual optimizer step - this requires layers to expose weights and gradients
-				// TODO: Implement weight update logic for trainable layers:
-				// 1. Iterate through layers to identify trainable ones
-				// 2. Get current weights and gradients
-				// 3. Use optimizer to calculate weight updates
-				// 4. Apply updated weights back to the layers
+				// 4. Update weights for trainable layers using the optimizer
+				for (const { layerIndex, gradients: weightGradientsMap } of batchWeightGradients) {
+					const layer = this.layers[layerIndex] as TrainableLayer; // Known to be trainable
+					const currentWeightsMap = layer.getWeights();
+					const newWeightsMap = new Map<string, number[] | number[][]>();
+
+					for (const [paramName, paramGradientsUntyped] of weightGradientsMap) {
+						const paramCurrentWeightsUntyped = currentWeightsMap.get(paramName);
+
+						if (!paramCurrentWeightsUntyped) {
+							console.warn(
+								`No current weights found for param ${paramName} in layer ${layerIndex}`,
+							);
+							continue;
+						}
+
+						if (
+							Array.isArray(paramCurrentWeightsUntyped) &&
+							Array.isArray(paramGradientsUntyped)
+						) {
+							if (
+								paramCurrentWeightsUntyped.length > 0 &&
+								typeof paramCurrentWeightsUntyped[0] === "number"
+							) {
+								// It's a 1D array (e.g., biases)
+								const paramCurrentWeights = paramCurrentWeightsUntyped as number[];
+								const paramGradients = paramGradientsUntyped as number[];
+								const updatedParamValues: number[] = [];
+								for (let k = 0; k < paramCurrentWeights.length; k++) {
+									const weightKey = `layer${layerIndex}_${paramName}_${k}`;
+									const tempWeightMap = new Map<string, number>([
+										[weightKey, paramCurrentWeights[k]],
+									]);
+									const tempGradientMap = new Map<string, number>([
+										[weightKey, paramGradients[k]],
+									]);
+									
+									// Assuming optimizer.update handles state per unique key
+									// Note: The Optimizer base class should define the 'update' method.
+									// Using 'as any' if it's not yet defined on the base type.
+									const updatedValMap = this.optimizer.update(
+										tempWeightMap,
+										tempGradientMap,
+									);
+									// @ts-ignore
+									// biome-ignore lint/style/noNonNullAssertion : I know what I'm doing
+									updatedParamValues.push(updatedValMap.get(weightKey)!);
+								}
+								newWeightsMap.set(paramName, updatedParamValues);
+							} else if (
+								paramCurrentWeightsUntyped.length > 0 &&
+								Array.isArray(paramCurrentWeightsUntyped[0])
+							) {
+								// It's a 2D array (e.g., weights)
+								const paramCurrentWeights = paramCurrentWeightsUntyped as number[][];
+								const paramGradients = paramGradientsUntyped as number[][];
+								const updatedParamValues: number[][] = [];
+								for (let r = 0; r < paramCurrentWeights.length; r++) {
+									const newRow: number[] = [];
+									for (let c = 0; c < paramCurrentWeights[r].length; c++) {
+										const weightKey = `layer${layerIndex}_${paramName}_${r}_${c}`;
+										const tempWeightMap = new Map<string, number>([
+											[weightKey, paramCurrentWeights[r][c]],
+										]);
+										const tempGradientMap = new Map<string, number>([
+											[weightKey, paramGradients[r][c]],
+										]);
+
+										const updatedValMap = this.optimizer.update(
+											tempWeightMap,
+											tempGradientMap,
+										);
+										// @ts-ignore
+										// biome-ignore lint/style/noNonNullAssertion : I know what I'm doing
+										newRow.push(updatedValMap.get(weightKey)!);
+									}
+									updatedParamValues.push(newRow);
+								}
+								newWeightsMap.set(paramName, updatedParamValues);
+							}
+						}
+					}
+					layer.updateWeights(newWeightsMap);
+				}
 			}
 			if (debugEpochEnabled) {
 				console.log(
