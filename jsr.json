@@ -5,7 +5,7 @@
 	"version": "0.2.0",
 	"license": "MIT",
 	"exports": {
-		".": "./src/mod.ts",
+		".": "./src/core/mod.ts",
 		"./layers": "./src/layers/mod.ts",
 		"./losses": "./src/losses/mod.ts",
 		"./optimizes": "./src/optimizes/mod.ts"
