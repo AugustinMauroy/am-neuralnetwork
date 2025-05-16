@@ -5,9 +5,10 @@
 	"version": "0.2.0",
 	"license": "MIT",
 	"exports": {
-		".": "./src/nn.ts",
-		"./neuralnetwork": "./src/nn.ts",
-		"./nn": "./src/nn.ts"
+		".": "./src/core/mod.ts",
+		"./layers": "./src/layers/mod.ts",
+		"./losses": "./src/losses/mod.ts",
+		"./optimizes": "./src/optimizes/mod.ts"
 	},
 	"publish": {
 		"include": ["LICENSE", "README.md", "src/**/*.ts", "jsr.json"]

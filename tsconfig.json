@@ -2,8 +2,7 @@
 	"compilerOptions": {
 		"allowImportingTsExtensions": true,
 		"declaration": true,
-		// disable it for now
-		"erasableSyntaxOnly": false,
+		"erasableSyntaxOnly": true,
 		"module": "nodenext",
 		"outDir": "dist",
 		"rewriteRelativeImportExtensions": true,
