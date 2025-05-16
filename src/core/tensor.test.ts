@@ -17,7 +17,7 @@ describe("Tensor", () => {
 
 		it("should throw an error for non-array input", () => {
 			assert.throws(
-				() => new Tensor(null as any),
+				() => new Tensor(null),
 				/Input data must be a non-empty 2D array of numbers./,
 			);
 		});
@@ -31,7 +31,8 @@ describe("Tensor", () => {
 
 		it("should throw an error for array of non-arrays", () => {
 			assert.throws(
-				() => new Tensor([1, 2] as any),
+				// @ts-expect-error
+				() => new Tensor([1, 2]),
 				/Input data must be a non-empty 2D array of numbers./,
 			);
 		});
