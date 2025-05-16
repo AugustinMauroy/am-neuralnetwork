@@ -20,6 +20,8 @@ export abstract class Optimizer {
 	 * @param params The parameters (weights and biases) of the model to be updated.
 	 * @param grads The gradients of the parameters.
 	 */
-	abstract update(params: Map<string, number>, grads: Map<string, number>): unknown;
+	abstract update(
+		params: Map<string, number>,
+		grads: Map<string, number>,
+	): unknown;
 }
-

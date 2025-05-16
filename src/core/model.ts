@@ -205,7 +205,10 @@ export class Model {
 				}
 
 				// 4. Update weights for trainable layers using the optimizer
-				for (const { layerIndex, gradients: weightGradientsMap } of batchWeightGradients) {
+				for (const {
+					layerIndex,
+					gradients: weightGradientsMap,
+				} of batchWeightGradients) {
 					const layer = this.layers[layerIndex] as TrainableLayer; // Known to be trainable
 					const currentWeightsMap = layer.getWeights();
 					const newWeightsMap = new Map<string, number[] | number[][]>();
@@ -229,7 +232,8 @@ export class Model {
 								typeof paramCurrentWeightsUntyped[0] === "number"
 							) {
 								// It's a 1D array (e.g., biases)
-								const paramCurrentWeights = paramCurrentWeightsUntyped as number[];
+								const paramCurrentWeights =
+									paramCurrentWeightsUntyped as number[];
 								const paramGradients = paramGradientsUntyped as number[];
 								const updatedParamValues: number[] = [];
 								for (let k = 0; k < paramCurrentWeights.length; k++) {
@@ -240,7 +244,7 @@ export class Model {
 									const tempGradientMap = new Map<string, number>([
 										[weightKey, paramGradients[k]],
 									]);
-									
+
 									// Assuming optimizer.update handles state per unique key
 									// Note: The Optimizer base class should define the 'update' method.
 									// Using 'as any' if it's not yet defined on the base type.
@@ -258,7 +262,8 @@ export class Model {
 								Array.isArray(paramCurrentWeightsUntyped[0])
 							) {
 								// It's a 2D array (e.g., weights)
-								const paramCurrentWeights = paramCurrentWeightsUntyped as number[][];
+								const paramCurrentWeights =
+									paramCurrentWeightsUntyped as number[][];
 								const paramGradients = paramGradientsUntyped as number[][];
 								const updatedParamValues: number[][] = [];
 								for (let r = 0; r < paramCurrentWeights.length; r++) {
@@ -308,7 +313,9 @@ export class Model {
 					}
 				}
 				const accuracy = correctPredictions / predictions.length;
-				console.log(`Epoch ${epoch + 1}/${epochs}, Accuracy: ${accuracy.toFixed(4)}`);
+				console.log(
+					`Epoch ${epoch + 1}/${epochs}, Accuracy: ${accuracy.toFixed(4)}`,
+				);
 			}
 		}
 	}
