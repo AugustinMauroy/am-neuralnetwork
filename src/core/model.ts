@@ -296,7 +296,20 @@ export class Model {
 					}`,
 				);
 			}
-			// TODO: Calculate and log metrics if any
+			if (debugEpochEnabled && this.metrics.includes("accuracy")) {
+				const predictions = this.predict(trainingData);
+				let correctPredictions = 0;
+				for (let i = 0; i < predictions.length; i++) {
+					// Assuming binary classification and output is a single value
+					const predictedValue = predictions[i][0] > 0.5 ? 1 : 0;
+					const targetValue = trainingLabels[i][0];
+					if (predictedValue === targetValue) {
+						correctPredictions++;
+					}
+				}
+				const accuracy = correctPredictions / predictions.length;
+				console.log(`Epoch ${epoch + 1}/${epochs}, Accuracy: ${accuracy.toFixed(4)}`);
+			}
 		}
 	}
 
