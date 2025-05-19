@@ -38,7 +38,7 @@ export class Dense implements TrainableLayer {
 	/**
 	 * Returns the number of input units.
 	 * @returns The number of input units.
-	 */	
+	 */
 	public getInputUnits(): number {
 		return this.inputUnits;
 	}

@@ -7,52 +7,55 @@ import { MeanSquaredError } from "../src/losses/mod.ts";
 
 // Helper function to parse CSV data and prepare it for the model
 function loadIrisData(filePath: string): {
-    features: number[][];
-    labels: number[][];
-    classNames: string[];
+	features: number[][];
+	labels: number[][];
+	classNames: string[];
 } {
-    const csvString = readFileSync(filePath, "utf-8");
-    const lines = csvString.trim().split("\n");
-    const header = lines.shift()?.split(",").map((s) => s.replace(/"/g, ""));
-    if (!header) throw new Error("CSV header not found");
+	const csvString = readFileSync(filePath, "utf-8");
+	const lines = csvString.trim().split("\n");
+	const header = lines
+		.shift()
+		?.split(",")
+		.map((s) => s.replace(/"/g, ""));
+	if (!header) throw new Error("CSV header not found");
 
-    const features: number[][] = [];
-    const rawLabels: string[] = [];
-    const classNames = ["Setosa", "Versicolor", "Virginica"]; // Predefined class order
+	const features: number[][] = [];
+	const rawLabels: string[] = [];
+	const classNames = ["Setosa", "Versicolor", "Virginica"]; // Predefined class order
 
-    //lines.forEach((line) => {
-    for (const line of lines) {
-        const values = line.split(",");
-        features.push(values.slice(0, 4).map(Number));
-        rawLabels.push(values[4].replace(/"/g, ""));
-    };
+	//lines.forEach((line) => {
+	for (const line of lines) {
+		const values = line.split(",");
+		features.push(values.slice(0, 4).map(Number));
+		rawLabels.push(values[4].replace(/"/g, ""));
+	}
 
-    // One-hot encode labels
-    const labels: number[][] = rawLabels.map((label) => {
-        const oneHot = [0, 0, 0];
-        const index = classNames.indexOf(label);
-        if (index !== -1) {
-            oneHot[index] = 1;
-        }
-        return oneHot;
-    });
+	// One-hot encode labels
+	const labels: number[][] = rawLabels.map((label) => {
+		const oneHot = [0, 0, 0];
+		const index = classNames.indexOf(label);
+		if (index !== -1) {
+			oneHot[index] = 1;
+		}
+		return oneHot;
+	});
 
-    return { features, labels, classNames };
+	return { features, labels, classNames };
 }
 
 // 1. Prepare data
 // Load the full dataset from the CSV file
 const dataPath = "./example/iris.csv"; // Relative path to the CSV file
 const {
-    features: allFeatures,
-    labels: allLabels,
-    classNames,
+	features: allFeatures,
+	labels: allLabels,
+	classNames,
 } = loadIrisData(dataPath);
 
 // Shuffle the data (optional but good practice)
 const combined = allFeatures.map((feature, i) => ({
-    feature,
-    label: allLabels[i],
+	feature,
+	label: allLabels[i],
 }));
 combined.sort(() => Math.random() - 0.5);
 const trainingData = combined.map((d) => d.feature);
@@ -74,9 +77,9 @@ model.addLayer(new Softmax()); // Softmax activation for multi-class probabiliti
 
 // 3. Compile the model
 model.compile(
-    new Adam(0.005), // Adam optimizer with a slightly smaller learning rate
-    new MeanSquaredError(), // Mean Squared Error loss function
-    ["accuracy"],
+	new Adam(0.005), // Adam optimizer with a slightly smaller learning rate
+	new MeanSquaredError(), // Mean Squared Error loss function
+	["accuracy"],
 );
 
 // 4. Train the model
@@ -86,29 +89,29 @@ console.log("Model training finished.");
 
 // 5. Make predictions,
 if (valFeatures.length > 0) {
-    console.log("\nPredictions on validation data (first 5 samples):");
-    const predictions = model.predict(valFeatures);
-    predictions.slice(0, 5).forEach((prediction, index) => {
-        const predictedProbs = prediction;
-        const actualLabelOneHot = valLabels[index];
+	console.log("\nPredictions on validation data (first 5 samples):");
+	const predictions = model.predict(valFeatures);
+	predictions.slice(0, 5).forEach((prediction, index) => {
+		const predictedProbs = prediction;
+		const actualLabelOneHot = valLabels[index];
 
-        const predictedClassIndex = predictedProbs.indexOf(
-            Math.max(...predictedProbs),
-        );
-        const actualClassIndex = actualLabelOneHot.indexOf(1);
+		const predictedClassIndex = predictedProbs.indexOf(
+			Math.max(...predictedProbs),
+		);
+		const actualClassIndex = actualLabelOneHot.indexOf(1);
 
-        console.log(
-            `Input: [${valFeatures[index].join(", ")}] -> Predicted: ${
-                classNames[predictedClassIndex]
-            } (Probs: ${predictedProbs
-                .map((p) => p.toFixed(3))
-                .join(", ")}), Actual: ${classNames[actualClassIndex]}`,
-        );
-    });
+		console.log(
+			`Input: [${valFeatures[index].join(", ")}] -> Predicted: ${
+				classNames[predictedClassIndex]
+			} (Probs: ${predictedProbs
+				.map((p) => p.toFixed(3))
+				.join(", ")}), Actual: ${classNames[actualClassIndex]}`,
+		);
+	});
 }
 
 // 6. Evaluate the model
 if (valFeatures.length > 0) {
-    const evaluation = model.evaluate(valFeatures, valLabels);
-    console.log("\nModel Evaluation (conceptual):", evaluation);
+	const evaluation = model.evaluate(valFeatures, valLabels);
+	console.log("\nModel Evaluation (conceptual):", evaluation);
 }
