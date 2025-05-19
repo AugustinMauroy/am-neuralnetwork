@@ -97,25 +97,25 @@ function loadLabelNames(filePath: string): string[] {
 }
 
 function displayImageInTerminal(
-    data: number[],
-    width: number,
-    height: number
+	data: number[],
+	width: number,
+	height: number,
 ): void {
-    console.log("\x1b[2J"); // Clear the terminal
-    console.log("\x1b[0;0H"); // Move the cursor to the top-left corner
+	console.log("\x1b[2J"); // Clear the terminal
+	console.log("\x1b[0;0H"); // Move the cursor to the top-left corner
 
-    for (let y = 0; y < height; y++) {
-        let row = "";
-        for (let x = 0; x < width; x++) {
-            const r = Math.floor(data[y * width + x] * 255);
-            const g = Math.floor(data[1024 + y * width + x] * 255);
-            const b = Math.floor(data[2048 + y * width + x] * 255);
-            row += `\x1b[48;2;${r};${g};${b}m  `;
-        }
-        row += "\x1b[0m"; // Reset the color
-        console.log(row);
-    }
-    console.log("\x1b[0m\n"); // Reset the color and add a new line
+	for (let y = 0; y < height; y++) {
+		let row = "";
+		for (let x = 0; x < width; x++) {
+			const r = Math.floor(data[y * width + x] * 255);
+			const g = Math.floor(data[1024 + y * width + x] * 255);
+			const b = Math.floor(data[2048 + y * width + x] * 255);
+			row += `\x1b[48;2;${r};${g};${b}m  `;
+		}
+		row += "\x1b[0m"; // Reset the color
+		console.log(row);
+	}
+	console.log("\x1b[0m\n"); // Reset the color and add a new line
 }
 
 console.log("CIFAR-10 Example using a Multi-Layer Perceptron (MLP)");
