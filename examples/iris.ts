@@ -45,7 +45,7 @@ function loadIrisData(filePath: string): {
 
 // 1. Prepare data
 // Load the full dataset from the CSV file
-const dataPath = "./example/iris.csv"; // Relative path to the CSV file
+const dataPath = "./examples/iris.csv"; // Relative path to the CSV file
 const {
 	features: allFeatures,
 	labels: allLabels,

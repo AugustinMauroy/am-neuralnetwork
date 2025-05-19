@@ -85,20 +85,21 @@ function displayImageInTerminal(
     width: number,
     height: number
 ): void {
+    console.log("\x1b[2J"); // Clear the terminal
+    console.log("\x1b[0;0H"); // Move the cursor to the top-left corner
+
     for (let y = 0; y < height; y++) {
         let row = "";
         for (let x = 0; x < width; x++) {
-            const i = (y * width + x);
-            const r = Math.floor(data[i] * 255);
-            console.log("data[i]", data[i])
-            console.log("r", r)
-            const g = Math.floor(data[i + 1] * 255);
-            const b = Math.floor(data[i + 2] * 255);
-            row += `\x1b[48;2;${r};${g};${b}m  \x1b[0m`;
+            const r = Math.floor(data[y * width + x] * 255);
+            const g = Math.floor(data[1024 + y * width + x] * 255);
+            const b = Math.floor(data[2048 + y * width + x] * 255);
+            row += `\x1b[48;2;${r};${g};${b}m  `;
         }
+        row += "\x1b[0m"; // Reset the color
         console.log(row);
     }
-    console.log("\x1b[0m\n");
+    console.log("\x1b[0m\n"); // Reset the color and add a new line
 }
 
 console.log("CIFAR-100 Example using a Multi-Layer Perceptron (MLP)");
@@ -112,10 +113,10 @@ console.log(
 // 1. Load CIFAR-100 Data
 // Ensure you have train.bin, test.bin, fine_label_names.txt, and coarse_label_names.txt
 // in the 'example/cifar-100/' directory.
-const FINE_LABEL_NAMES_PATH = "./example/cifar-100/fine_label_names.txt";
-// const COARSE_LABEL_NAMES_PATH = "./example/cifar-100/coarse_label_names.txt";
-const TRAIN_FILE_PATH = "./example/cifar-100/train.bin";
-const TEST_FILE_PATH = "./example/cifar-100/test.bin";
+const FINE_LABEL_NAMES_PATH = "./examples/cifar-100-binary/fine_label_names.txt";
+// const COARSE_LABEL_NAMES_PATH = "./examples/cifar-100/coarse_label_names.txt";
+const TRAIN_FILE_PATH = "./examples/cifar-100-binary/train.bin";
+const TEST_FILE_PATH = "./examples/cifar-100-binary/test.bin";
 
 let trainingData: number[][];
 let trainingLabels: number[][];
@@ -174,9 +175,6 @@ if (trainingData.length > subsetSizeTrain && testData.length > subsetSizeTest) {
 } else {
     console.warn("Dataset size is smaller than subset sizes, using full loaded data.");
 }
-
-// display image for testing 
-for (let i = 0; i < numSamplesToCheck; i++) {}
 
 // 2. Define the Model (MLP)
 const model = new Model();

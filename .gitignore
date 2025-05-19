@@ -6,3 +6,8 @@ node_modules
 
 # Test
 coverage.lcov
+
+# Examples datasets
+examples/cifar-10-batches-bin
+examples/cifar-100-binary
+examples/mnist-dataset

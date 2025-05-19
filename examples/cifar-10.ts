@@ -96,6 +96,28 @@ function loadLabelNames(filePath: string): string[] {
 	}
 }
 
+function displayImageInTerminal(
+    data: number[],
+    width: number,
+    height: number
+): void {
+    console.log("\x1b[2J"); // Clear the terminal
+    console.log("\x1b[0;0H"); // Move the cursor to the top-left corner
+
+    for (let y = 0; y < height; y++) {
+        let row = "";
+        for (let x = 0; x < width; x++) {
+            const r = Math.floor(data[y * width + x] * 255);
+            const g = Math.floor(data[1024 + y * width + x] * 255);
+            const b = Math.floor(data[2048 + y * width + x] * 255);
+            row += `\x1b[48;2;${r};${g};${b}m  `;
+        }
+        row += "\x1b[0m"; // Reset the color
+        console.log(row);
+    }
+    console.log("\x1b[0m\n"); // Reset the color and add a new line
+}
+
 console.log("CIFAR-10 Example using a Multi-Layer Perceptron (MLP)");
 console.log(
 	"Note: MLPs have limitations for image data. CNNs are preferred for better accuracy.",
@@ -105,15 +127,15 @@ console.log(
 );
 
 // 1. Load CIFAR-10 Data
-const BATCHES_META_PATH = "./example/cifar-10/batches.meta.txt";
+const BATCHES_META_PATH = "./examples/cifar-10-batches-bin/batches.meta.txt";
 const DATA_BATCH_PATHS = [
-	"./example/cifar-10/data_batch_1.bin",
-	"./example/cifar-10/data_batch_2.bin",
-	"./example/cifar-10/data_batch_3.bin",
-	"./example/cifar-10/data_batch_4.bin",
-	"./example/cifar-10/data_batch_5.bin",
+	"./examples/cifar-10-batches-bin/data_batch_1.bin",
+	"./examples/cifar-10-batches-bin/data_batch_2.bin",
+	"./examples/cifar-10-batches-bin/data_batch_3.bin",
+	"./examples/cifar-10-batches-bin/data_batch_4.bin",
+	"./examples/cifar-10-batches-bin/data_batch_5.bin",
 ];
-const TEST_BATCH_PATH = "./example/cifar-10/test_batch.bin";
+const TEST_BATCH_PATH = "./examples/cifar-10-batches-bin/test_batch.bin";
 
 let trainingData: number[][];
 let trainingLabels: number[][];
@@ -157,8 +179,8 @@ try {
 
 // For demonstration, let's use a small subset of the data to speed up training.
 // Remove or adjust these lines to use the full dataset.
-const subsetSizeTrain = 1000; // e.g., 1000 training samples
-const subsetSizeTest = 200; // e.g., 200 test samples
+const subsetSizeTrain = 500; // e.g., 1000 training samples
+const subsetSizeTest = 100; // e.g., 200 test samples
 
 console.warn(
 	`Using a subset of data: ${subsetSizeTrain} for training, ${subsetSizeTest} for testing.`,
@@ -184,7 +206,7 @@ model.compile(
 
 // 4. Train the Model
 console.log("Starting model training...");
-const epochs = 10; // Adjust epochs as needed
+const epochs = 5; // Adjust epochs as needed
 const batchSize = 32; // Adjust batch size based on memory and performance
 await model.fit(trainingData, trainingLabels, epochs, batchSize, true); // Enable debugEpochEnabled
 
@@ -196,4 +218,17 @@ if (testData.length > 0 && testLabels.length > 0) {
 		"Model Evaluation (conceptual, built-in accuracy is for binary):",
 		evaluation,
 	);
+}
+
+// 6. Use the Model for Predictions
+for (let i = 0; i < 10; i++) {
+	const prediction = model.predict([testData[i]]);
+	const predictedLabel = prediction[0].indexOf(Math.max(...prediction[0]));
+	const expectedLabel = testLabels[i].indexOf(Math.max(...testLabels[i]));
+
+	console.log(`Displaying test image ${i + 1}:`);
+	console.log(
+		`Predicted label: ${predictedLabel} (${labelNames[predictedLabel]}), Expected label: ${expectedLabel} (${labelNames[expectedLabel]})`,
+	);
+	displayImageInTerminal(testData[i], CIFAR_IMAGE_WIDTH, CIFAR_IMAGE_HEIGHT);
 }
