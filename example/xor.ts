@@ -37,7 +37,7 @@ const trainingLabels = [[0], [1], [1], [0]];
 console.log(
 	"Starting model training (conceptual, `fit` may not be fully implemented)...",
 );
-await model.fit(trainingData, trainingLabels, 100000, 4);
+await model.fit(trainingData, trainingLabels, 10000, 4, false);
 console.log("Model training finished (conceptually).");
 
 // 6. Make predictions

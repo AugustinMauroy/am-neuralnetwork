@@ -57,7 +57,7 @@ console.log(
 	"Starting model training for quadrant classification (conceptual, `fit` may not fully update weights)...",
 );
 // Using a moderate number of epochs
-await model.fit(trainingData, trainingLabels, 200, 8, true); // 200 epochs, batch size 8, debug epochs
+await model.fit(trainingData, trainingLabels, 200, 8); // 200 epochs, batch size 8, debug epochs
 console.log("Model training finished (conceptually).");
 
 // 6. Make predictions
