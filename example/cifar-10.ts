@@ -10,60 +10,90 @@ const CIFAR_IMAGE_CHANNELS = 3;
 const CIFAR_IMAGE_SIZE =
 	CIFAR_IMAGE_HEIGHT * CIFAR_IMAGE_WIDTH * CIFAR_IMAGE_CHANNELS;
 const CIFAR_NUM_CLASSES = 10;
+const CIFAR_RECORD_SIZE = 1 + CIFAR_IMAGE_SIZE; // 1 byte for label, 3072 for image
 
-function loadIdxLabels(filePath: string, numClasses: number): number[][] {
-	const buffer = readFileSync(filePath);
-	// const magic = buffer.readInt32BE(0); // 0x00000801 for labels
-	const numItems = buffer.readInt32BE(4);
-	const labelsData = buffer.subarray(8);
-
-	const labels: number[][] = [];
-	for (let i = 0; i < numItems; i++) {
-		const label = labelsData.readUInt8(i);
-		const oneHotLabel = Array(numClasses).fill(0);
-		oneHotLabel[label] = 1;
-		labels.push(oneHotLabel);
-	}
-	return labels;
-}
-
-function loadIdxImages(
+// Function to load a single CIFAR-10 batch file
+function loadCifarBatch(
 	filePath: string,
-	imageHeight: number,
-	imageWidth: number,
-	numChannels: number,
-): number[][] {
+	numClasses: number,
+): { images: number[][]; labels: number[][] } {
 	const buffer = readFileSync(filePath);
-	// const magic = buffer.readInt32BE(0); // 0x00000803 for images
-	const numItemsInHeader = buffer.readInt32BE(4);
-	// const numRows = buffer.readInt32BE(8);
-	// const numCols = buffer.readInt32BE(12);
-	const imagesData = buffer.subarray(16);
+	const numRecords = buffer.length / CIFAR_RECORD_SIZE;
 
-	const imageSize = imageHeight * imageWidth * numChannels;
-	const images: number[][] = [];
-
-	// Calculate the actual number of items that can be processed based on buffer size
-	const numItemsToProcess = Math.floor(imagesData.length / imageSize);
-
-	if (numItemsInHeader !== numItemsToProcess) {
+	if (buffer.length % CIFAR_RECORD_SIZE !== 0) {
 		console.warn(
-			`[loadIdxImages] Warning: Header in file "${filePath}" indicates ${numItemsInHeader} items, but actual data size allows for ${numItemsToProcess} items. Using ${numItemsToProcess}. The file might be corrupted or truncated.`,
+			`[loadCifarBatch] Warning: File "${filePath}" size (${buffer.length}) is not a multiple of record size (${CIFAR_RECORD_SIZE}). File might be corrupted or incomplete. Expected records: ${buffer.length / CIFAR_RECORD_SIZE}`,
 		);
 	}
-	// If numItemsToProcess is 0 and numItemsInHeader was > 0, it means the file is too small for even one image.
 
-	for (let i = 0; i < numItemsToProcess; i++) {
-		// Use numItemsToProcess instead of numItemsInHeader
-		const imageData: number[] = [];
-		const offset = i * imageSize;
-		for (let j = 0; j < imageSize; j++) {
+	const images: number[][] = [];
+	const labels: number[][] = [];
+
+	for (let i = 0; i < numRecords; i++) {
+		const offset = i * CIFAR_RECORD_SIZE;
+
+		// Extract label
+		const label = buffer.readUInt8(offset);
+		const oneHotLabel = Array(numClasses).fill(0);
+		if (label < numClasses) {
+			oneHotLabel[label] = 1;
+		} else {
+			console.warn(
+				`[loadCifarBatch] Warning: Label ${label} out of bounds for numClasses ${numClasses} in file ${filePath}`,
+			);
+		}
+		labels.push(oneHotLabel);
+
+		// Extract image data
+		const imageData = new Array(CIFAR_IMAGE_SIZE);
+		for (let j = 0; j < CIFAR_IMAGE_SIZE; j++) {
 			// Normalize pixel values to [0, 1]
-			imageData.push(imagesData.readUInt8(offset + j) / 255.0);
+			imageData[j] = buffer.readUInt8(offset + 1 + j) / 255.0;
 		}
 		images.push(imageData);
 	}
-	return images;
+	return { images, labels };
+}
+
+// Function to load multiple CIFAR-10 batch files (for training data)
+function loadCifarDataset(
+	batchFilePaths: string[],
+	numClasses: number,
+): { images: number[][]; labels: number[][] } {
+	let allImages: number[][] = [];
+	let allLabels: number[][] = [];
+
+	for (const filePath of batchFilePaths) {
+		console.log(`Loading batch file: ${filePath}...`);
+		try {
+			const batch = loadCifarBatch(filePath, numClasses);
+			allImages = allImages.concat(batch.images);
+			allLabels = allLabels.concat(batch.labels);
+			console.log(
+				`Loaded ${batch.images.length} images and ${batch.labels.length} labels from ${filePath}.`,
+			);
+		} catch (e) {
+			console.error(`Error loading batch file ${filePath}:`, e);
+			throw e;
+		}
+	}
+	return { images: allImages, labels: allLabels };
+}
+
+// Function to load label names from batches.meta.txt
+function loadLabelNames(filePath: string): string[] {
+	try {
+		const content = readFileSync(filePath, "utf-8");
+		return content
+			.trim()
+			.split("\n")
+			.map((name) => name.trim())
+			.filter((name) => name.length > 0);
+	} catch (e) {
+		console.error(`Error loading label names from ${filePath}:`, e);
+		// Fallback label names
+		return Array.from({ length: CIFAR_NUM_CLASSES }, (_, i) => `Class ${i}`);
+	}
 }
 
 console.log("CIFAR-10 Example using a Multi-Layer Perceptron (MLP)");
@@ -75,46 +105,51 @@ console.log(
 );
 
 // 1. Load CIFAR-10 Data
-// Update these paths if your files are located elsewhere
-const trainImagesPath = "./example/cifar-10/train-images.idx3-ubyte";
-const trainLabelsPath = "./example/cifar-10/train-labels.idx1-ubyte";
-const testImagesPath = "./example/cifar-10/t10k-images.idx3-ubyte";
-const testLabelsPath = "./example/cifar-10/t10k-labels.idx1-ubyte";
+const BATCHES_META_PATH = "./example/cifar-10/batches.meta.txt";
+const DATA_BATCH_PATHS = [
+	"./example/cifar-10/data_batch_1.bin",
+	"./example/cifar-10/data_batch_2.bin",
+	"./example/cifar-10/data_batch_3.bin",
+	"./example/cifar-10/data_batch_4.bin",
+	"./example/cifar-10/data_batch_5.bin",
+];
+const TEST_BATCH_PATH = "./example/cifar-10/test_batch.bin";
 
 let trainingData: number[][];
 let trainingLabels: number[][];
 let testData: number[][];
 let testLabels: number[][];
+let labelNames: string[];
 
 try {
-	console.log("Loading training images...");
-	trainingData = loadIdxImages(
-		trainImagesPath,
-		CIFAR_IMAGE_HEIGHT,
-		CIFAR_IMAGE_WIDTH,
-		CIFAR_IMAGE_CHANNELS,
+	console.log("Loading CIFAR-10 label names...");
+	labelNames = loadLabelNames(BATCHES_META_PATH);
+	if (labelNames.length !== CIFAR_NUM_CLASSES) {
+		console.warn(
+			`Expected ${CIFAR_NUM_CLASSES} label names, but found ${labelNames.length}. Using provided names.`,
+		);
+	}
+	console.log(`Loaded label names: ${labelNames.join(", ")}`);
+
+	console.log("Loading CIFAR-10 training data...");
+	const trainDataset = loadCifarDataset(DATA_BATCH_PATHS, CIFAR_NUM_CLASSES);
+	trainingData = trainDataset.images;
+	trainingLabels = trainDataset.labels;
+	console.log(
+		`Loaded ${trainingData.length} total training images and ${trainingLabels.length} total training labels.`,
 	);
-	console.log(`Loaded ${trainingData.length} training images.`);
 
-	console.log("Loading training labels...");
-	trainingLabels = loadIdxLabels(trainLabelsPath, CIFAR_NUM_CLASSES);
-	console.log(`Loaded ${trainingLabels.length} training labels.`);
-
-	console.log("Loading test images...");
-	testData = loadIdxImages(
-		testImagesPath,
-		CIFAR_IMAGE_HEIGHT,
-		CIFAR_IMAGE_WIDTH,
-		CIFAR_IMAGE_CHANNELS,
+	console.log("Loading CIFAR-10 test data...");
+	// Test data is a single batch file, so pass it as an array to loadCifarDataset
+	const testDataset = loadCifarDataset([TEST_BATCH_PATH], CIFAR_NUM_CLASSES);
+	testData = testDataset.images;
+	testLabels = testDataset.labels;
+	console.log(
+		`Loaded ${testData.length} total test images and ${testLabels.length} total test labels.`,
 	);
-	console.log(`Loaded ${testData.length} test images.`);
-
-	console.log("Loading test labels...");
-	testLabels = loadIdxLabels(testLabelsPath, CIFAR_NUM_CLASSES);
-	console.log(`Loaded ${testLabels.length} test labels.`);
 } catch (error) {
 	console.error(
-		"Error loading CIFAR-10 data. Make sure the .idx*-ubyte files are in the 'example/cifar-10/' directory.",
+		"Error loading CIFAR-10 data. Make sure the .bin files and batches.meta.txt are in the 'example/cifar-10/' directory and are not corrupted.",
 		error,
 	);
 	process.exit(1);
@@ -151,71 +186,14 @@ model.compile(
 console.log("Starting model training...");
 const epochs = 10; // Adjust epochs as needed
 const batchSize = 32; // Adjust batch size based on memory and performance
-try {
-	await model.fit(trainingData, trainingLabels, epochs, batchSize, true); // Enable debugEpochEnabled
-	console.log("Model training finished.");
-} catch (e) {
-	console.error("Error during model training:", e);
-}
+await model.fit(trainingData, trainingLabels, epochs, batchSize, true); // Enable debugEpochEnabled
 
 // 5. Evaluate the Model
 if (testData.length > 0 && testLabels.length > 0) {
 	console.log("\nEvaluating model...");
-	try {
-		const evaluation = model.evaluate(testData, testLabels);
-		console.log(
-			"Model Evaluation (conceptual, built-in accuracy is for binary):",
-			evaluation,
-		);
-
-		// Manual accuracy calculation for multi-class
-		const predictions = model.predict(testData);
-		let correctPredictions = 0;
-		for (let i = 0; i < predictions.length; i++) {
-			const predictedClassIndex = predictions[i].indexOf(
-				Math.max(...predictions[i]),
-			);
-			const actualClassIndex = testLabels[i].indexOf(1);
-			if (predictedClassIndex === actualClassIndex) {
-				correctPredictions++;
-			}
-		}
-		const manualAccuracy = correctPredictions / predictions.length;
-		console.log(
-			`Manual Multi-class Accuracy on Test Set: ${(manualAccuracy * 100).toFixed(2)}%`,
-		);
-	} catch (e) {
-		console.error("Error during model evaluation:", e);
-	}
+	const evaluation = model.evaluate(testData, testLabels);
+	console.log(
+		"Model Evaluation (conceptual, built-in accuracy is for binary):",
+		evaluation,
+	);
 }
-
-// 6. Make some predictions (optional)
-const cifarClassNames = [
-	"airplane",
-	"automobile",
-	"bird",
-	"cat",
-	"deer",
-	"dog",
-	"frog",
-	"horse",
-	"ship",
-	"truck",
-];
-
-if (testData.length > 5) {
-	console.log("\nSample Predictions (first 5 test images):");
-	const samplePredictions = model.predict(testData.slice(0, 5));
-	samplePredictions.forEach((prediction, index) => {
-		const predictedClassIndex = prediction.indexOf(Math.max(...prediction));
-		const actualClassIndex = testLabels[index].indexOf(1);
-		console.log(
-			`Sample ${index + 1}: Predicted: ${cifarClassNames[predictedClassIndex]}, Actual: ${cifarClassNames[actualClassIndex]}`,
-		);
-	});
-}
-
-console.log("\n--- CIFAR-10 MLP Example End ---");
-console.log(
-	"Reminder: For better performance on CIFAR-10, consider using Convolutional Neural Networks (CNNs).",
-);
