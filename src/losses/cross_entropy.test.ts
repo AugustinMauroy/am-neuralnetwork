@@ -8,7 +8,7 @@ describe("CrossEntropyLoss", () => {
 		const predictions = [0.7, 0.2, 0.1];
 		const targets = [1, 0, 0];
 		const loss = crossEntropy.calculate(predictions, targets);
-		assert.strictEqual(loss, 0.3566749439373039);
+		assert.strictEqual(loss, 0.1188916479791013);
 	});
 
 	it("should throw an error if predictions and targets have different lengths", () => {

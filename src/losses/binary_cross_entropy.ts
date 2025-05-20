@@ -11,7 +11,7 @@
  * const predictions = [0.9, 0.2, 0.8];
  * const targets = [1, 0, 1];
  * const loss = binaryCrossEntropy.calculate(predictions, targets);
- * console.log("Binary CrossEntropy Loss:", loss); // Output: ~0.164
+ * console.log("Binary CrossEntropy Loss:", loss); // Output: ~0.1839
  * ```
  */
 export class BinaryCrossEntropyLoss {

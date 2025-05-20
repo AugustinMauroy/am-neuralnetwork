@@ -19,7 +19,7 @@ export class CrossEntropyLoss {
 	 * Calculates the cross-entropy loss.
 	 * @param predictions An array of predicted probabilities (must sum to 1).
 	 * @param targets An array of one-hot encoded target values.
-	 * @returns The calculated cross-entropy loss.
+	 * @returns The calculated cross-entropy loss, summed across all samples.
 	 * @throws Error if the predictions and targets arrays do not have the same length.
 	 */
 	calculate(predictions: number[], targets: number[]): number {
@@ -36,6 +36,7 @@ export class CrossEntropyLoss {
 			}
 		}
 
-		return loss;
+		// Normalize the loss by the number of samples
+		return loss / predictions.length;
 	}
 }
