@@ -36,6 +36,22 @@ export class Dense implements TrainableLayer {
 	}
 
 	/**
+	 * Returns the number of input units.
+	 * @returns The number of input units.
+	 */
+	public getInputUnits(): number {
+		return this.inputUnits;
+	}
+
+	/**
+	 * Returns the number of output units.
+	 * @returns The number of output units.
+	 */
+	public getOutputUnits(): number {
+		return this.outputUnits;
+	}
+
+	/**
 	 * Initializes the weights for the layer.
 	 * Weights are initialized with random values between 0 and 1.
 	 * @hidden

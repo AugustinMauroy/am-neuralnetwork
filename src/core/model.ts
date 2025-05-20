@@ -83,6 +83,14 @@ export class Model {
 	}
 
 	/**
+	 * Retrieves the layers of the model.
+	 * @returns An array of layers in the model.
+	 */
+	public getLayers(): Layer[] {
+		return this.layers;
+	}
+
+	/**
 	 * Configures the model for training.
 	 * @param optimizer The optimizer to use for training.
 	 * @param lossFunction The loss function to use.
