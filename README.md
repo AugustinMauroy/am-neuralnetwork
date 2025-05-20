@@ -89,3 +89,5 @@ if (validationData.length > 0) {
 	console.log("Evaluation:", evaluation);
 }
 ```
+
+If you want more examples, check out the [examples](https://github.com/AugustinMauroy/am-neuralnetwork/tree/main/examples) folder.
