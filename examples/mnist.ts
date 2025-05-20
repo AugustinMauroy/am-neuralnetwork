@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { Model } from "../src/core/mod.ts";
 import { Dense, ReLU, Softmax } from "../src/layers/mod.ts";
 import { Adam } from "../src/optimizes/mod.ts";
-import { MeanSquaredError } from "../src/losses/mod.ts";
+import { CrossEntropyLoss } from "../src/losses/mod.ts";
 
 const MNIST_IMAGE_MAGIC_NUMBER = 2051;
 const MNIST_LABEL_MAGIC_NUMBER = 2049;
@@ -174,7 +174,7 @@ model.addLayer(new Softmax()); // Softmax for multi-class probability output
 // 3. Compile the Model
 model.compile(
 	new Adam(0.001), // Adam optimizer
-	new MeanSquaredError(), // Using MSE as it's available. CrossEntropyLoss is often preferred for classification.
+	new CrossEntropyLoss(), // Cross-entropy loss for multi-class classification
 	["accuracy"], // Metric
 );
 

@@ -1,8 +1,9 @@
 import { readFileSync } from "node:fs";
+
 import { Model } from "../src/core/mod.ts";
 import { Dense, ReLU, Softmax } from "../src/layers/mod.ts";
 import { Adam } from "../src/optimizes/mod.ts";
-import { MeanSquaredError } from "../src/losses/mod.ts";
+import { CrossEntropyLoss } from "../src/losses/mod.ts";
 
 const CIFAR100_IMAGE_HEIGHT = 32;
 const CIFAR100_IMAGE_WIDTH = 32;
@@ -199,11 +200,7 @@ model.addLayer(new Dense(128, CIFAR100_NUM_FINE_CLASSES)); // Hidden layer to ou
 model.addLayer(new Softmax());
 
 // 3. Compile the Model
-model.compile(
-	new Adam(0.001),
-	new MeanSquaredError(), // CrossEntropyLoss would be more appropriate for multi-class
-	["accuracy"],
-);
+model.compile(new Adam(0.001), new CrossEntropyLoss(), ["accuracy"]);
 
 // 4. Train the Model
 console.log("Starting model training...");

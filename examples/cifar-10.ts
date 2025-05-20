@@ -1,8 +1,9 @@
 import { readFileSync } from "node:fs";
+
 import { Model } from "../src/core/mod.ts";
 import { Dense, ReLU, Softmax } from "../src/layers/mod.ts";
 import { Adam } from "../src/optimizes/mod.ts";
-import { MeanSquaredError } from "../src/losses/mod.ts";
+import { CrossEntropyLoss } from "../src/losses/mod.ts";
 
 const CIFAR_IMAGE_HEIGHT = 32;
 const CIFAR_IMAGE_WIDTH = 32;
@@ -200,7 +201,7 @@ model.addLayer(new Softmax());
 // 3. Compile the Model
 model.compile(
 	new Adam(0.001), // Adam optimizer
-	new MeanSquaredError(), // Using MSE as it's available, though CrossEntropy is typical for classification
+	new CrossEntropyLoss(), // Cross-entropy loss for multi-class classification
 	["accuracy"], // Metric
 );
 
