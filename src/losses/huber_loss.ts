@@ -2,6 +2,8 @@
  * Calculates the Huber Loss between predictions and targets.
  * Huber Loss is less sensitive to outliers than MSE and behaves like MAE for large errors.
  *
+ * @see https://en.wikipedia.org/wiki/Huber_loss
+ *
  * @example
  * ```ts
  * const huber = new HuberLoss(1.0); // delta = 1.0
