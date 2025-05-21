@@ -6,7 +6,7 @@
 is designed to be easy to use and understand, while still being powerful enough
 to be useful in real-world applications.
 
-Also, it's cross-runtime compatible, meaning you can use it in both [Node.js](https://nodejs.org/) and [Deno](https://deno.land/), [bun](https://bun.sh) as well as in the browser. It
+Also, it's cross-runtime compatible, meaning you can use it in all [Node.js](https://nodejs.org/), [Deno](https://deno.land/), [bun](https://bun.sh), and the browser. It
 
 ## How to construct a neural network
 
