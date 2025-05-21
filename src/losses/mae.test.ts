@@ -31,11 +31,14 @@ describe("MeanAbsoluteError", () => {
 		const yTrue = [1, 2];
 		const yPred = [1, 2, 3];
 		const mae = new MeanAbsoluteError();
-		assert.throws(() => {
-			mae.calculate(yTrue, yPred);
-		}, {
-			message: "Predictions and targets must have the same length.",
-		});
+		assert.throws(
+			() => {
+				mae.calculate(yTrue, yPred);
+			},
+			{
+				message: "Predictions and targets must have the same length.",
+			},
+		);
 	});
 
 	it("should return 0 for empty arrays", () => {

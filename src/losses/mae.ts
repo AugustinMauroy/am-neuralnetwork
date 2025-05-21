@@ -13,27 +13,27 @@
  * ```
  */
 export class MeanAbsoluteError {
-    /**
-     * Calculates the MAE loss.
-     * @param predictions An array of predicted numerical values.
-     * @param targets An array of actual numerical values (ground truth).
-     * @returns The calculated Mean Absolute Error.
-     * @throws Error if the predictions and targets arrays do not have the same length.
-     */
-    calculate(predictions: number[], targets: number[]): number {
-        if (predictions.length !== targets.length) {
-            throw new Error("Predictions and targets must have the same length.");
-        }
-        if (predictions.length === 0) {
-            return 0; // Or throw an error, depending on desired behavior for empty inputs
-        }
+	/**
+	 * Calculates the MAE loss.
+	 * @param predictions An array of predicted numerical values.
+	 * @param targets An array of actual numerical values (ground truth).
+	 * @returns The calculated Mean Absolute Error.
+	 * @throws Error if the predictions and targets arrays do not have the same length.
+	 */
+	calculate(predictions: number[], targets: number[]): number {
+		if (predictions.length !== targets.length) {
+			throw new Error("Predictions and targets must have the same length.");
+		}
+		if (predictions.length === 0) {
+			return 0; // Or throw an error, depending on desired behavior for empty inputs
+		}
 
-        let sum = 0;
-        for (let i = 0; i < predictions.length; i++) {
-            const error = Math.abs(predictions[i] - targets[i]);
-            sum += error;
-        }
+		let sum = 0;
+		for (let i = 0; i < predictions.length; i++) {
+			const error = Math.abs(predictions[i] - targets[i]);
+			sum += error;
+		}
 
-        return sum / predictions.length;
-    }
+		return sum / predictions.length;
+	}
 }
