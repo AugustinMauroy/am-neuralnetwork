@@ -22,7 +22,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
       - name: Cache dependencies
-        uses: actions/cache@f4b3439a656ba812b8cb417d2d49f9c810103092 # v3.4.0
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
@@ -50,7 +50,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
       - name: Cache dependencies
-        uses: actions/cache@f4b3439a656ba812b8cb417d2d49f9c810103092 # v3.4.0
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
