@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { MeanAbsoluteError } from "./meanAbsoluteError.ts";
+import { MeanAbsoluteError } from "./mae.ts";
 
 describe("MeanAbsoluteError", () => {
 	it("should return 0 when predictions are perfect", () => {
