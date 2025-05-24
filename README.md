@@ -1,6 +1,6 @@
 # Neural Network
 
-[![JSR](https://jsr.io/badges/@am/neuralnetwork)](https://jsr.io/@am/neuralnetwork)
+[![JSR](https://jsr.io/badges/@am/neuralnetwork)](https://jsr.io/@am/neuralnetwork) [![codecov](https://codecov.io/gh/AugustinMauroy/am-neuralnetwork/graph/badge.svg?token=5NGBHF23AK)](https://codecov.io/gh/AugustinMauroy/am-neuralnetwork)
 
 `@am/neuralnetwork` is a simple neural network library written in TypeScript. It
 is designed to be easy to use and understand, while still being powerful enough
