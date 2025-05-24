@@ -9,7 +9,7 @@
 		"biome:ci": "biome ci ./",
 		"pre-commit": "node --run biome:lint:fix; node --run biome:format:fix",
 		"test": "node --test **/*.test.ts",
-		"test:coverage": "node --test --experimental-test-coverage --test-coverage-include='src/**/*' --test-coverage-exclude='**/*.test.ts' './**/*.test.ts'",
+		"test:coverage": "node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=./coverage.lcov --test-reporter=spec --test-reporter-destination=stdout --test-coverage-include='src/**/*' --test-coverage-exclude='**/*.test.ts' './**/*.test.ts'",
 		"types:check": "tsc --noEmit"
 	},
 	"devDependencies": {
