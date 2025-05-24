@@ -354,7 +354,7 @@ describe("Dense Layer", () => {
 	it("getConfig should return the correct layer configuration", () => {
 		const layer = new Dense(3, 2);
 		const config = layer.getConfig();
-		
+
 		assert.deepStrictEqual(config, {
 			name: "Dense",
 			inputUnits: 3,

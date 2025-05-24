@@ -31,7 +31,7 @@ describe("RMSprop Optimizer", () => {
 
 	it("getName should return 'RMSprop'", () => {
 		const rmsprop = new RMSprop();
-		
+
 		assert.strictEqual(rmsprop.getName(), "RMSprop");
 	});
 

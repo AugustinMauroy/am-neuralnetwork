@@ -8,7 +8,7 @@ describe("BinaryCrossEntropyLoss", () => {
 		const targets = [1, 0, 1];
 		const binaryCrossEntropy = new BinaryCrossEntropyLoss();
 		const loss = binaryCrossEntropy.calculate(predictions, targets);
-		
+
 		assert.strictEqual(loss, 0.18388253942874858);
 	});
 

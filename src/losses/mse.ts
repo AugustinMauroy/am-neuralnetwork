@@ -14,7 +14,7 @@ import { Loss } from "./loss.ts";
  * console.log("MSE Loss:", loss); // MSE Loss: 0.03
  * ```
  */
-export class MeanSquaredError extends Loss { 
+export class MeanSquaredError extends Loss {
 	public readonly name = "MeanSquaredError";
 
 	/**

@@ -397,34 +397,38 @@ describe("Model", () => {
 		consoleLogSpy.mock.restore();
 	});
 
-	it("Should serialize and deserialize the model correctly", { skip: "Not implemented yet" }, () => {
-		const model = new Model();
-		model.addLayer(new Dense(2, 3)); // Example Dense layer
-		model.compile(new SGD(), new MeanSquaredError(), ["accuracy"]);
+	it(
+		"Should serialize and deserialize the model correctly",
+		{ skip: "Not implemented yet" },
+		() => {
+			const model = new Model();
+			model.addLayer(new Dense(2, 3)); // Example Dense layer
+			model.compile(new SGD(), new MeanSquaredError(), ["accuracy"]);
 
-		// @ts-expect-error - not implemented yet
-		const serialized: string = model.save();
+			// @ts-expect-error - not implemented yet
+			const serialized: string = model.save();
 
-		assert.ok(
-			typeof serialized === "string",
-			"Serialized model should be a string.",
-		);
-		assert.ok(
-			serialized.length > 0,
-			"Serialized model string should not be empty.",
-		);
+			assert.ok(
+				typeof serialized === "string",
+				"Serialized model should be a string.",
+			);
+			assert.ok(
+				serialized.length > 0,
+				"Serialized model string should not be empty.",
+			);
 
-		// @ts-expect-error - not implemented yet
-		const deserializedModel = Model.load(serialized);
+			// @ts-expect-error - not implemented yet
+			const deserializedModel = Model.load(serialized);
 
-		assert.ok(
-			deserializedModel instanceof Model,
-			"Deserialized model should be an instance of Model.",
-		);
-		assert.deepStrictEqual(
-			deserializedModel.getLayers().length,
-			1,
-			"Deserialized model should have the same number of layers.",
-		);
-	});
+			assert.ok(
+				deserializedModel instanceof Model,
+				"Deserialized model should be an instance of Model.",
+			);
+			assert.deepStrictEqual(
+				deserializedModel.getLayers().length,
+				1,
+				"Deserialized model should have the same number of layers.",
+			);
+		},
+	);
 });

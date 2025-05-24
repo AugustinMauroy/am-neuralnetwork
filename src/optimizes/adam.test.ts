@@ -33,7 +33,7 @@ describe("Adam Optimizer", () => {
 
 	it("getName should return 'Adam'", () => {
 		const adam = new Adam();
-		
+
 		assert.strictEqual(adam.getName(), "Adam");
 	});
 

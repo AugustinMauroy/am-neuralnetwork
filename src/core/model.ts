@@ -73,7 +73,7 @@ export class Model {
 	/** @hidden The optimizer used for training the model. */
 	private optimizer!: Optimizer;
 	/** @hidden The loss function used to evaluate the model's performance. */
-	private lossFunction!: Loss; 
+	private lossFunction!: Loss;
 	/** @hidden A list of metrics to evaluate during training and testing. */
 	private metrics: string[] = [];
 
@@ -397,7 +397,7 @@ export class Model {
 		}
 
 		return results;
-	}	
+	}
 }
 
 export default Model;

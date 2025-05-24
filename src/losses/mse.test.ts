@@ -45,7 +45,7 @@ describe("MeanSquaredError", () => {
 		const mse = new MeanSquaredError();
 
 		const result = mse.calculate(yTrue, yPred);
-		
+
 		assert.strictEqual(result, 0);
 	});
 

@@ -29,7 +29,7 @@ describe("Adagrad Optimizer", () => {
 
 	it("getName should return 'Adagrad'", () => {
 		const adagrad = new Adagrad();
-		
+
 		assert.strictEqual(adagrad.getName(), "Adagrad");
 	});
 

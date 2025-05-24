@@ -42,7 +42,7 @@ describe("Activation Layers", () => {
 
 	it("Relu getName", () => {
 		const relu = new ReLU();
-		
+
 		assert.strictEqual(relu.getName(), "ReLU");
 	});
 

@@ -59,7 +59,7 @@ describe("MeanAbsoluteError", () => {
 
 	it("name should accessible", () => {
 		const mae = new MeanAbsoluteError();
-		
+
 		assert.strictEqual(mae.name, "MeanAbsoluteError");
 	});
 });
