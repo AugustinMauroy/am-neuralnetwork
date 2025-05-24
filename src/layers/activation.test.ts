@@ -11,7 +11,7 @@ describe("Activation Layers", () => {
 		];
 		const output = relu.forward(input);
 
-		assert.deepEqual(output, [
+		assert.deepStrictEqual(output, [
 			[0, 2],
 			[3, 0],
 		]);
