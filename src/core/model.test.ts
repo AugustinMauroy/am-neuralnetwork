@@ -3,7 +3,7 @@ import { describe, it, mock } from "node:test";
 import { Model } from "./model.ts";
 import { Dense } from "../layers/mod.ts";
 import { SGD } from "../optimizes/mod.ts";
-import { MeanSquaredError } from "../losses/mod.ts";
+import { MeanSquaredError, HuberLoss } from "../losses/mod.ts";
 import type { Layer, TrainableLayer } from "./model.ts";
 
 // Mock Layer for testing predict and evaluate logic without full layer complexities
@@ -395,6 +395,43 @@ describe("Model", () => {
 		);
 
 		consoleLogSpy.mock.restore();
+	});
+
+	it("getConfig should return model configuration", () => {
+		const model = new Model();
+		model.addLayer(new Dense(2, 3)); // Example Dense layer
+		model.compile(new SGD(), new HuberLoss(), ["accuracy"]);
+
+		const config = model.getConfig();
+
+		assert.ok(
+			typeof config === "object" && config !== null,
+			"getConfig should return a non-null object.",
+		);
+		assert.ok(
+			Array.isArray(config.layers),
+			"getConfig should return an object with a layers array.",
+		);
+		assert.strictEqual(
+			config.layers.length,
+			1,
+			"getConfig should return the correct number of layers.",
+		);
+		assert.strictEqual(
+			config.layers[0].name,
+			"Dense",
+			"getConfig should return the correct layer name.",
+		);
+		assert.strictEqual(
+			config.optimizer.name,
+			"SGD",
+			"getConfig should return the correct optimizer name.",
+		);
+		assert.strictEqual(
+			config.lossFunction.name,
+			"HuberLoss",
+			"getConfig should return the correct loss function name.",
+		);
 	});
 
 	it("Should serialize and deserialize the model correctly", () => {

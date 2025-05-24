@@ -80,6 +80,6 @@ describe("HuberLoss", () => {
 
 		const config = huber.getConfig();
 
-		assert.deepStrictEqual(config, { delta });
+		assert.deepStrictEqual(config, { delta, name: "HuberLoss" });
 	});
 });

@@ -406,16 +406,22 @@ export class Model {
 	 * Retrieves the configuration of the model.
 	 * @returns An object containing the model's configuration.
 	 */
-	public getConfig(): Record<string, unknown> {
+	public getConfig(): {
+		layers: Array<{ name: string; config: Record<string, unknown> }>;
+		optimizer: Record<string, unknown>;
+		lossFunction: Record<string, unknown>;
+		metrics: string[];
+	} {
 		return {
 			layers: this.layers.map((layer) => ({
 				name: layer.getName(),
 				config: layer.getConfig(),
 			})),
 			optimizer: this.optimizer.getConfig(),
-			lossFunction: typeof this.lossFunction.getConfig === "function"
-				? this.lossFunction.getConfig()
-				: { name: this.lossFunction.name },
+			lossFunction:
+				typeof this.lossFunction.getConfig === "function"
+					? this.lossFunction.getConfig()
+					: { name: this.lossFunction.name },
 			metrics: this.metrics,
 		};
 	}

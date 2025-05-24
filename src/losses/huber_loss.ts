@@ -59,8 +59,9 @@ export class HuberLoss extends Loss {
 	 * Returns the configuration of the Huber Loss.
 	 * @returns An object containing the delta value.
 	 * */
-	getConfig(): Record<string, number> {
+	getConfig(): { name: string; delta: number } {
 		return {
+			name: this.name,
 			delta: this.delta,
 		};
 	}
