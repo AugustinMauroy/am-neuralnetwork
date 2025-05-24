@@ -399,13 +399,11 @@ describe("Model", () => {
 
 	it(
 		"Should serialize and deserialize the model correctly",
-		{ skip: "Not implemented yet" },
 		() => {
 			const model = new Model();
 			model.addLayer(new Dense(2, 3)); // Example Dense layer
 			model.compile(new SGD(), new MeanSquaredError(), ["accuracy"]);
 
-			// @ts-expect-error - not implemented yet
 			const serialized: string = model.save();
 
 			assert.ok(
@@ -417,7 +415,6 @@ describe("Model", () => {
 				"Serialized model string should not be empty.",
 			);
 
-			// @ts-expect-error - not implemented yet
 			const deserializedModel = Model.load(serialized);
 
 			assert.ok(

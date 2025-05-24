@@ -1,3 +1,6 @@
+import * as layers from "../layers/mod.ts";
+import * as optimizers from "../optimizes/mod.ts";
+import * as losses from "../losses/mod.ts";
 import type { Loss } from "../losses/loss.ts";
 import type { Optimizer } from "../optimizes/optimizer.ts";
 
@@ -397,6 +400,140 @@ export class Model {
 		}
 
 		return results;
+	}
+
+	/**
+	 * Retrieves the optimizer used by the model.
+	 * @returns The optimizer instance.
+	 */
+	public getOptimizer(): Optimizer {
+		if (!this.optimizer) {
+			throw new Error("Model must be compiled before accessing the optimizer.");
+		}
+		return this.optimizer;
+	}
+
+	/**
+	 * Retrieves the loss function used by the model.
+	 * @returns The loss function instance.
+	 */
+	public getLossFunction(): Loss {
+		if (!this.lossFunction) {
+			throw new Error(
+				"Model must be compiled before accessing the loss function.",
+			);
+		}
+		return this.lossFunction;
+	}
+
+	/**
+	 * Retrieves the metrics configured for the model.
+	 * @returns An array of metric names.
+	 */
+	public getMetrics(): string[] {
+		if (this.metrics.length === 0) {
+			throw new Error("Model must be compiled before accessing metrics.");
+		}
+		return this.metrics;
+	}
+
+	/**
+	 * Retrieves the configuration of the model.
+	 * @returns An object containing the model's configuration.
+	 */
+	public getConfig(): Record<string, unknown> {
+		return {
+			layers: this.layers.map((layer) => ({
+				name: layer.getName(),
+				config: layer.getConfig(),
+			})),
+			optimizer: this.optimizer.getConfig(),
+			lossFunction: (this.lossFunction.getConfig === undefined) ?
+				{ name: this.lossFunction.constructor.name } :
+				this.lossFunction.getConfig(),
+			metrics: this.metrics,
+		};
+	}
+	/**
+	 * Retrieves the names of the layers in the model.
+	 * @returns An array of layer names.
+	 * */
+	public getLayerNames(): string[] {
+		return this.layers.map((layer) => layer.getName());
+	}
+
+	/**
+	 * Retrieves the trainable layers in the model.
+	 * @returns An array of trainable layers.
+	 */
+	public getTrainableLayers(): TrainableLayer[] {
+		return this.layers.filter((layer): layer is TrainableLayer =>
+			this.isTrainableLayer(layer),
+		);
+	}
+
+	/**
+	 * Retrieves the non-trainable layers in the model.
+	 * @returns An array of non-trainable layers.
+	 */
+	public getNonTrainableLayers(): Layer[] {
+		return this.layers.filter(
+			(layer): layer is Layer => !this.isTrainableLayer(layer),
+		);
+	}
+
+	/**
+	 * Retrieves the number of layers in the model.
+	 * @returns The number of layers.
+	 */
+	public save(): string {
+		const config = this.getConfig();
+
+		return JSON.stringify(config, null, 2);
+	}
+
+	/**
+	 * Loads a model from a JSON string.
+	 * @param modelJson The JSON string representing the model configuration.
+	 * @returns An instance of the Model class.
+	 * @throws Error if a layer class is not found in the global scope.
+	 */
+	public static load(modelJson: string): Model {
+		const config = JSON.parse(modelJson);
+		const model = new Model();
+
+		for (const layerConfig of config.layers) {
+			const layerClass = layers[layerConfig.name];
+
+			if (!layerClass) {
+				throw new Error(`Layer class ${layerConfig.name} not found.`);
+			}
+
+			const layerInstance = new layerClass(layerConfig.config);
+			model.addLayer(layerInstance);
+		}
+
+		const optimizerClass = optimizers[config.optimizer.name];
+
+		if (!optimizerClass) {
+			throw new Error(`Optimizer class ${config.optimizer.name} not found.`);
+		}
+
+		const lossFunctionClass = losses[config.lossFunction.name];
+
+		if (!lossFunctionClass) {
+			throw new Error(
+				`Loss function class ${config.lossFunction.name} not found.`,
+			);
+		}
+
+		model.compile(
+			new optimizerClass(config.optimizer.config),
+			new lossFunctionClass(config.lossFunction.config),
+			config.metrics,
+		);
+
+		return model;
 	}
 }
 
