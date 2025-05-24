@@ -4,7 +4,6 @@ import { Model } from "./model.ts";
 import { Dense } from "../layers/mod.ts";
 import { SGD } from "../optimizes/mod.ts";
 import { MeanSquaredError } from "../losses/mod.ts";
-import { ReLU } from "../layers/mod.ts";
 import type { Layer, TrainableLayer } from "./model.ts";
 
 // Mock Layer for testing predict and evaluate logic without full layer complexities
@@ -432,13 +431,41 @@ describe("Model", () => {
 			const modelJson = JSON.stringify({
 				layers: [{ name: "NonExistentLayer", config: {} }],
 				optimizer: { name: "SGD", config: { learningRate: 0.01 } },
-				lossFunction: { name: "MeanSquaredError", config: {} },
+				lossFunction: {
+					name: "HuberLoss",
+					config: {
+						delta: 1.0,
+					},
+				},
 				metrics: [],
 			});
 
 			assert.throws(
 				() => Model.load(modelJson),
 				"Error: Loss function class NonExistentLoss not found.",
+			);
+		});
+
+		it("should work with a loss function that didn't have config", () => {
+			const modelJson = JSON.stringify({
+				layers: [{ name: "Dense", config: { inputUnits: 1, outputUnits: 1 } }],
+				optimizer: { name: "SGD", config: { learningRate: 0.01 } },
+				lossFunction: { name: "MeanSquaredError" },
+				metrics: [],
+			});
+
+			const model = Model.load(modelJson);
+
+			assert.ok(model instanceof Model, "Model should be loaded successfully.");
+			assert.strictEqual(
+				model.getLayers().length,
+				1,
+				"Model should have one layer after loading.",
+			);
+			assert.strictEqual(
+				model.getLayers()[0].getName(),
+				"Dense",
+				"Loaded layer should be a Dense layer.",
 			);
 		});
 
