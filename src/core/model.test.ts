@@ -4,6 +4,7 @@ import { Model } from "./model.ts";
 import { Dense } from "../layers/mod.ts";
 import { SGD } from "../optimizes/mod.ts";
 import { MeanSquaredError } from "../losses/mod.ts";
+import { ReLU } from "../layers/mod.ts";
 import type { Layer, TrainableLayer } from "./model.ts";
 
 // Mock Layer for testing predict and evaluate logic without full layer complexities
@@ -397,35 +398,75 @@ describe("Model", () => {
 		consoleLogSpy.mock.restore();
 	});
 
-	it(
-		"Should serialize and deserialize the model correctly",
-		() => {
-			const model = new Model();
-			model.addLayer(new Dense(2, 3)); // Example Dense layer
-			model.compile(new SGD(), new MeanSquaredError(), ["accuracy"]);
+	it("Should serialize and deserialize the model correctly", () => {
+		const model = new Model();
+		model.addLayer(new Dense(2, 3)); // Example Dense layer
+		model.compile(new SGD(), new MeanSquaredError(), ["accuracy"]);
 
-			const serialized: string = model.save();
+		const serialized: string = model.save();
 
-			assert.ok(
-				typeof serialized === "string",
-				"Serialized model should be a string.",
-			);
-			assert.ok(
-				serialized.length > 0,
-				"Serialized model string should not be empty.",
-			);
+		assert.ok(
+			typeof serialized === "string",
+			"Serialized model should be a string.",
+		);
+		assert.ok(
+			serialized.length > 0,
+			"Serialized model string should not be empty.",
+		);
 
-			const deserializedModel = Model.load(serialized);
+		const deserializedModel = Model.load(serialized);
 
-			assert.ok(
-				deserializedModel instanceof Model,
-				"Deserialized model should be an instance of Model.",
+		assert.ok(
+			deserializedModel instanceof Model,
+			"Deserialized model should be an instance of Model.",
+		);
+		assert.deepStrictEqual(
+			deserializedModel.getLayers().length,
+			1,
+			"Deserialized model should have the same number of layers.",
+		);
+	});
+
+	describe("Model.load error handling", () => {
+		it("should throw error if layer class not found during load", () => {
+			const modelJson = JSON.stringify({
+				layers: [{ name: "NonExistentLayer", config: {} }],
+				optimizer: { name: "SGD", config: { learningRate: 0.01 } },
+				lossFunction: { name: "MeanSquaredError", config: {} },
+				metrics: [],
+			});
+
+			assert.throws(
+				() => Model.load(modelJson),
+				"Error: Loss function class NonExistentLoss not found.",
 			);
-			assert.deepStrictEqual(
-				deserializedModel.getLayers().length,
-				1,
-				"Deserialized model should have the same number of layers.",
+		});
+
+		it("should throw error if optimizer class not found during load", () => {
+			const modelJson = JSON.stringify({
+				layers: [{ name: "Dense", config: { inputUnits: 1, outputUnits: 1 } }],
+				optimizer: { name: "NonExistentOptimizer", config: {} },
+				lossFunction: { name: "MeanSquaredError", config: {} },
+				metrics: [],
+			});
+
+			assert.throws(
+				() => Model.load(modelJson),
+				/Optimizer class NonExistentOptimizer not found./,
 			);
-		},
-	);
+		});
+
+		it("should throw error if loss function class not found during load", () => {
+			const modelJson = JSON.stringify({
+				layers: [{ name: "Dense", config: { inputUnits: 1, outputUnits: 1 } }],
+				optimizer: { name: "SGD", config: { learningRate: 0.01 } },
+				lossFunction: { name: "NonExistentLoss", config: {} },
+				metrics: [],
+			});
+
+			assert.throws(() => Model.load(modelJson), {
+				message: "Loss function class NonExistentLoss not found.",
+			});
+		});
+	});
 });

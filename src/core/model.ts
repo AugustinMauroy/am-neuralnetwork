@@ -403,41 +403,6 @@ export class Model {
 	}
 
 	/**
-	 * Retrieves the optimizer used by the model.
-	 * @returns The optimizer instance.
-	 */
-	public getOptimizer(): Optimizer {
-		if (!this.optimizer) {
-			throw new Error("Model must be compiled before accessing the optimizer.");
-		}
-		return this.optimizer;
-	}
-
-	/**
-	 * Retrieves the loss function used by the model.
-	 * @returns The loss function instance.
-	 */
-	public getLossFunction(): Loss {
-		if (!this.lossFunction) {
-			throw new Error(
-				"Model must be compiled before accessing the loss function.",
-			);
-		}
-		return this.lossFunction;
-	}
-
-	/**
-	 * Retrieves the metrics configured for the model.
-	 * @returns An array of metric names.
-	 */
-	public getMetrics(): string[] {
-		if (this.metrics.length === 0) {
-			throw new Error("Model must be compiled before accessing metrics.");
-		}
-		return this.metrics;
-	}
-
-	/**
 	 * Retrieves the configuration of the model.
 	 * @returns An object containing the model's configuration.
 	 */
@@ -448,38 +413,12 @@ export class Model {
 				config: layer.getConfig(),
 			})),
 			optimizer: this.optimizer.getConfig(),
-			lossFunction: (this.lossFunction.getConfig === undefined) ?
-				{ name: this.lossFunction.constructor.name } :
-				this.lossFunction.getConfig(),
+			lossFunction:
+				this.lossFunction.getConfig === undefined
+					? { name: this.lossFunction.constructor.name }
+					: this.lossFunction.getConfig(),
 			metrics: this.metrics,
 		};
-	}
-	/**
-	 * Retrieves the names of the layers in the model.
-	 * @returns An array of layer names.
-	 * */
-	public getLayerNames(): string[] {
-		return this.layers.map((layer) => layer.getName());
-	}
-
-	/**
-	 * Retrieves the trainable layers in the model.
-	 * @returns An array of trainable layers.
-	 */
-	public getTrainableLayers(): TrainableLayer[] {
-		return this.layers.filter((layer): layer is TrainableLayer =>
-			this.isTrainableLayer(layer),
-		);
-	}
-
-	/**
-	 * Retrieves the non-trainable layers in the model.
-	 * @returns An array of non-trainable layers.
-	 */
-	public getNonTrainableLayers(): Layer[] {
-		return this.layers.filter(
-			(layer): layer is Layer => !this.isTrainableLayer(layer),
-		);
 	}
 
 	/**
