@@ -1,3 +1,5 @@
+import { Loss } from "./loss.ts";
+
 /**
  * Calculates the Hinge Loss between predictions and targets.
  * Commonly used for "maximum-margin" classification, most notably for support vector machines (SVMs).
@@ -15,7 +17,7 @@
  *                                  //             = (0.5 + 0.7 + 0) / 3 = 1.2 / 3 = 0.4
  * ```
  */
-export class HingeLoss {
+export class HingeLoss extends Loss {
 	public readonly name = "HingeLoss";
 
 	/**

@@ -1,3 +1,5 @@
+import { Loss } from "./loss.ts";
+
 /**
  * Calculates the Huber Loss between predictions and targets.
  * Huber Loss is less sensitive to outliers than MSE and behaves like MAE for large errors.
@@ -13,11 +15,12 @@
  * console.log("Huber Loss:", loss); // Huber Loss: ...
  * ```
  */
-export class HuberLoss {
+export class HuberLoss extends Loss {
 	public readonly name = "HuberLoss";
 	public readonly delta: number;
 
 	constructor(delta = 1.0) {
+		super();
 		this.delta = delta;
 	}
 

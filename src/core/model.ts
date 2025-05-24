@@ -1,4 +1,4 @@
-import type { MeanSquaredError } from "../losses/mse.ts";
+import type { Loss } from "../losses/loss.ts";
 import type { Optimizer } from "../optimizes/optimizer.ts";
 
 /**
@@ -73,7 +73,7 @@ export class Model {
 	/** @hidden The optimizer used for training the model. */
 	private optimizer!: Optimizer;
 	/** @hidden The loss function used to evaluate the model's performance. */
-	private lossFunction!: MeanSquaredError; // Assuming MeanSquaredError for now
+	private lossFunction!: Loss; 
 	/** @hidden A list of metrics to evaluate during training and testing. */
 	private metrics: string[] = [];
 
@@ -110,7 +110,7 @@ export class Model {
 	 */
 	public compile(
 		optimizer: Optimizer,
-		lossFunction: MeanSquaredError,
+		lossFunction: Loss,
 		metrics: string[],
 	): void {
 		this.optimizer = optimizer;
@@ -397,7 +397,7 @@ export class Model {
 		}
 
 		return results;
-	}
+	}	
 }
 
 export default Model;

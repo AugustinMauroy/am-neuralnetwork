@@ -1,3 +1,5 @@
+import { Loss } from "./loss.ts";
+
 /**
  * Calculates the Mean Squared Error (MSE) between predictions and target values.
  * MSE is defined as the average of the squared differences between predicted and actual values.
@@ -12,7 +14,7 @@
  * console.log("MSE Loss:", loss); // MSE Loss: 0.03
  * ```
  */
-export class MeanSquaredError {
+export class MeanSquaredError extends Loss { 
 	public readonly name = "MeanSquaredError";
 
 	/**
