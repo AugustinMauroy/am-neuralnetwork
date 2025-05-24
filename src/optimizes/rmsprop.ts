@@ -63,4 +63,25 @@ export class RMSprop extends Optimizer {
 
 		return updatedWeights;
 	}
+
+	/**
+	 * Returns the configuration of the RMSprop optimizer.
+	 * @returns An object containing the name, learning rate, decay rate, and epsilon.
+	 */
+	public getName(): string {
+		return "RMSprop";
+	}
+
+	/**
+	 * Returns the configuration of the RMSprop optimizer.
+	 * @returns An object containing the name, learning rate, decay rate, and epsilon.
+	 */
+	public getConfig(): Record<string, unknown> {
+		return {
+			name: "RMSprop",
+			learningRate: this.learningRate,
+			decayRate: this.decayRate,
+			epsilon: this.epsilon,
+		};
+	}
 }

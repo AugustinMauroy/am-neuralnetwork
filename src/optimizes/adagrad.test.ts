@@ -26,4 +26,21 @@ describe("Adagrad Optimizer", () => {
 		assert.notStrictEqual(updatedWeights.get("w1"), weights.get("w1"));
 		assert.notStrictEqual(updatedWeights.get("w2"), weights.get("w2"));
 	});
+
+	it("getName should return 'Adagrad'", () => {
+		const adagrad = new Adagrad();
+
+		assert.strictEqual(adagrad.getName(), "Adagrad");
+	});
+
+	it("getConfig should return the correct configuration", () => {
+		const adagrad = new Adagrad(0.01, 1e-8);
+		const config = adagrad.getConfig();
+
+		assert.deepStrictEqual(config, {
+			name: "Adagrad",
+			learningRate: 0.01,
+			epsilon: 1e-8,
+		});
+	});
 });

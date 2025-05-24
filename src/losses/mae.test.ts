@@ -7,7 +7,9 @@ describe("MeanAbsoluteError", () => {
 		const yTrue = [1, 2, 3];
 		const yPred = [1, 2, 3];
 		const mae = new MeanAbsoluteError();
+
 		const result = mae.calculate(yTrue, yPred);
+
 		assert.strictEqual(result, 0);
 	});
 
@@ -15,7 +17,9 @@ describe("MeanAbsoluteError", () => {
 		const yTrue = [1, 2, 3];
 		const yPred = [2, 3, 4];
 		const mae = new MeanAbsoluteError();
+
 		const result = mae.calculate(yTrue, yPred); // All errors = 1, mean = 1
+
 		assert.strictEqual(result, 1);
 	});
 
@@ -23,14 +27,18 @@ describe("MeanAbsoluteError", () => {
 		const yTrue = [1, 2, 3];
 		const yPred = [1.1, 1.9, 3.2];
 		const mae = new MeanAbsoluteError();
+
 		const result = mae.calculate(yTrue, yPred);
+
 		assert.ok(Math.abs(result - 0.13333333333333344) < 1e-10);
 	});
 
 	it("should throw an error for different length arrays", () => {
 		const yTrue = [1, 2];
 		const yPred = [1, 2, 3];
+
 		const mae = new MeanAbsoluteError();
+
 		assert.throws(
 			() => {
 				mae.calculate(yTrue, yPred);
@@ -43,7 +51,15 @@ describe("MeanAbsoluteError", () => {
 
 	it("should return 0 for empty arrays", () => {
 		const mae = new MeanAbsoluteError();
+
 		const result = mae.calculate([], []);
+
 		assert.strictEqual(result, 0);
+	});
+
+	it("name should accessible", () => {
+		const mae = new MeanAbsoluteError();
+
+		assert.strictEqual(mae.name, "MeanAbsoluteError");
 	});
 });

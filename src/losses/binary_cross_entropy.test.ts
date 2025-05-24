@@ -8,6 +8,7 @@ describe("BinaryCrossEntropyLoss", () => {
 		const targets = [1, 0, 1];
 		const binaryCrossEntropy = new BinaryCrossEntropyLoss();
 		const loss = binaryCrossEntropy.calculate(predictions, targets);
+
 		assert.strictEqual(loss, 0.18388253942874858);
 	});
 
@@ -15,6 +16,7 @@ describe("BinaryCrossEntropyLoss", () => {
 		const predictions = [0.9, 0.2];
 		const targets = [1, 0, 1];
 		const binaryCrossEntropy = new BinaryCrossEntropyLoss();
+
 		assert.throws(
 			() => {
 				binaryCrossEntropy.calculate(predictions, targets);
@@ -30,6 +32,13 @@ describe("BinaryCrossEntropyLoss", () => {
 		const targets: number[] = [];
 		const binaryCrossEntropy = new BinaryCrossEntropyLoss();
 		const loss = binaryCrossEntropy.calculate(predictions, targets);
+
 		assert.strictEqual(loss, 0);
+	});
+
+	it("name should be accessible", () => {
+		const binaryCrossEntropy = new BinaryCrossEntropyLoss();
+
+		assert.strictEqual(binaryCrossEntropy.name, "BinaryCrossEntropyLoss");
 	});
 });

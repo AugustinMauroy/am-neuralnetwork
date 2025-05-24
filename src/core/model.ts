@@ -1,4 +1,7 @@
-import type { MeanSquaredError } from "../losses/mse.ts";
+import * as layers from "../layers/mod.ts";
+import * as optimizers from "../optimizes/mod.ts";
+import * as losses from "../losses/mod.ts";
+import type { Loss } from "../losses/loss.ts";
 import type { Optimizer } from "../optimizes/optimizer.ts";
 
 /**
@@ -19,6 +22,18 @@ export interface Layer {
 	 * Signature might need adjustment for specific layer needs.
 	 */
 	backward(outputGradient: number[][]): number[][];
+
+	/**
+	 * Retrieves the name of the layer.
+	 * @returns The name of the layer.
+	 */
+	getName(): string;
+
+	/**
+	 * Gets the configuration of the layer.
+	 * @returns A configuration object containing layer-specific parameters.
+	 */
+	getConfig(): Record<string, unknown>;
 }
 
 /**
@@ -61,7 +76,7 @@ export class Model {
 	/** @hidden The optimizer used for training the model. */
 	private optimizer!: Optimizer;
 	/** @hidden The loss function used to evaluate the model's performance. */
-	private lossFunction!: MeanSquaredError; // Assuming MeanSquaredError for now
+	private lossFunction!: Loss;
 	/** @hidden A list of metrics to evaluate during training and testing. */
 	private metrics: string[] = [];
 
@@ -98,7 +113,7 @@ export class Model {
 	 */
 	public compile(
 		optimizer: Optimizer,
-		lossFunction: MeanSquaredError,
+		lossFunction: Loss,
 		metrics: string[],
 	): void {
 		this.optimizer = optimizer;
@@ -388,26 +403,81 @@ export class Model {
 	}
 
 	/**
-	 * Saves the model's architecture, weights, and optimizer state.
-	 * Note: This method is not fully implemented.
-	 * @param filePath The path where the model will be saved.
+	 * Retrieves the configuration of the model.
+	 * @returns An object containing the model's configuration.
 	 */
-	public save(_filePath: string): void {
-		console.warn("Model.save() is not fully implemented.");
+	public getConfig(): {
+		layers: Array<{ name: string; config: Record<string, unknown> }>;
+		optimizer: Record<string, unknown>;
+		lossFunction: Record<string, unknown>;
+		metrics: string[];
+	} {
+		return {
+			layers: this.layers.map((layer) => ({
+				name: layer.getName(),
+				config: layer.getConfig(),
+			})),
+			optimizer: this.optimizer.getConfig(),
+			lossFunction:
+				typeof this.lossFunction.getConfig === "function"
+					? this.lossFunction.getConfig()
+					: { name: this.lossFunction.name },
+			metrics: this.metrics,
+		};
 	}
 
 	/**
-	 * Loads a model from a file.
-	 * Note: This method is not fully implemented and returns a new empty model.
-	 * @param _filePath The path from which to load the model.
-	 * @returns A new {@link Model} instance (currently empty).
+	 * Retrieves the number of layers in the model.
+	 * @returns The number of layers.
 	 */
-	public static load(_filePath: string): Model {
-		console.warn(
-			"Model.load() is not fully implemented and returns a new empty model.",
+	public save(): string {
+		const config = this.getConfig();
+
+		return JSON.stringify(config, null, 2);
+	}
+
+	/**
+	 * Loads a model from a JSON string.
+	 * @param modelJson The JSON string representing the model configuration.
+	 * @returns An instance of the Model class.
+	 * @throws Error if a layer class is not found in the global scope.
+	 */
+	public static load(modelJson: string): Model {
+		const config = JSON.parse(modelJson);
+		const model = new Model();
+
+		for (const layerConfig of config.layers) {
+			const layerClass = layers[layerConfig.name];
+
+			if (!layerClass) {
+				throw new Error(`Layer class ${layerConfig.name} not found.`);
+			}
+
+			const layerInstance = new layerClass(layerConfig.config);
+			model.addLayer(layerInstance);
+		}
+
+		const optimizerClass = optimizers[config.optimizer.name];
+
+		if (!optimizerClass) {
+			throw new Error(`Optimizer class ${config.optimizer.name} not found.`);
+		}
+
+		const lossFunctionClass = losses[config.lossFunction.name];
+
+		if (!lossFunctionClass) {
+			throw new Error(
+				`Loss function class ${config.lossFunction.name} not found.`,
+			);
+		}
+
+		model.compile(
+			new optimizerClass(config.optimizer.config),
+			new lossFunctionClass(config.lossFunction.config),
+			config.metrics,
 		);
 
-		return new Model();
+		return model;
 	}
 }
 

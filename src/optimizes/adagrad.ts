@@ -50,4 +50,24 @@ export class Adagrad extends Optimizer {
 
 		return updatedWeights;
 	}
+
+	/**
+	 * Returns the name of the optimizer.
+	 * @returns The name of the optimizer, which is "Adagrad".
+	 */
+	public getName(): string {
+		return "Adagrad";
+	}
+
+	/**
+	 * Returns the configuration of the Adagrad optimizer.
+	 * @returns An object containing the name and learning rate of the optimizer.
+	 */
+	public getConfig(): Record<string, unknown> {
+		return {
+			name: this.getName(),
+			learningRate: this.learningRate,
+			epsilon: this.epsilon,
+		};
+	}
 }

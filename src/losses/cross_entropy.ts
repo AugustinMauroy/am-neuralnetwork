@@ -1,3 +1,5 @@
+import { Loss } from "./loss.ts";
+
 /**
  * CrossEntropyLoss calculates the cross-entropy loss between predictions and target values.
  * This loss is commonly used for classification tasks.
@@ -14,7 +16,9 @@
  * console.log("CrossEntropy Loss:", loss); // Output: ~0.3567
  * ```
  */
-export class CrossEntropyLoss {
+export class CrossEntropyLoss extends Loss {
+	public readonly name = "CrossEntropyLoss";
+
 	/**
 	 * Calculates the cross-entropy loss.
 	 * @param predictions An array of predicted probabilities (must sum to 1).

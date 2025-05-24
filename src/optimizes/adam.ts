@@ -84,4 +84,26 @@ export class Adam extends Optimizer {
 
 		return updatedWeights;
 	}
+
+	/**
+	 * Returns the name of the optimizer.
+	 * @returns The name of the optimizer, which is "Adam".
+	 */
+	public getName(): string {
+		return "Adam";
+	}
+
+	/**
+	 * Returns the configuration of the Adam optimizer.
+	 * @returns An object containing the name, learning rate, beta1, beta2, and epsilon.
+	 */
+	public getConfig(): Record<string, unknown> {
+		return {
+			name: this.getName(),
+			learningRate: this.learningRate,
+			beta1: this.beta1,
+			beta2: this.beta2,
+			epsilon: this.epsilon,
+		};
+	}
 }

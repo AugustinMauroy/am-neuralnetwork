@@ -31,12 +31,14 @@ describe("HingeLoss", () => {
 		// 1 - (-1)*(-1.0) = 0
 		// 1 - (-1)*0.5 = 1 + 0.5 = 1.5
 		const expectedLoss = (0 + 0 + 1.5) / 3;
+
 		assert.strictEqual(hingeLoss.calculate(predictions, targets), expectedLoss);
 	});
 
 	it("should throw an error for different length arrays", () => {
 		const predictions = [0.5, 0.2];
 		const targets = [1, -1, 1];
+
 		assert.throws(
 			() => {
 				hingeLoss.calculate(predictions, targets);
@@ -54,6 +56,7 @@ describe("HingeLoss", () => {
 	it("should throw an error if targets are not -1 or 1", () => {
 		const predictions = [0.5, 0.2];
 		const targets = [1, 0];
+
 		assert.throws(
 			() => {
 				hingeLoss.calculate(predictions, targets);
@@ -62,5 +65,9 @@ describe("HingeLoss", () => {
 				message: "Target labels for Hinge Loss must be 1 or -1.",
 			},
 		);
+	});
+
+	it("name should be accessible", () => {
+		assert.strictEqual(hingeLoss.name, "HingeLoss");
 	});
 });

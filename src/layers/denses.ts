@@ -253,4 +253,24 @@ export class Dense implements TrainableLayer {
 			);
 		}
 	}
+
+	/**
+	 * Returns the name of the layer.
+	 * @returns The name of the layer type.
+	 */
+	getName(): string {
+		return "Dense";
+	}
+
+	/**
+	 * Returns the configuration of the layer.
+	 * @returns An object containing the layer type and its parameters.
+	 */
+	getConfig(): Record<string, unknown> {
+		return {
+			name: this.getName(),
+			inputUnits: this.inputUnits,
+			outputUnits: this.outputUnits,
+		};
+	}
 }

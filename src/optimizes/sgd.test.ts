@@ -25,4 +25,20 @@ describe("SGD Optimizer", () => {
 		assert.notStrictEqual(updatedWeights.get("w1"), weights.get("w1"));
 		assert.notStrictEqual(updatedWeights.get("w2"), weights.get("w2"));
 	});
+
+	it("getName should return 'SGD'", () => {
+		const sgd = new SGD();
+
+		assert.strictEqual(sgd.getName(), "SGD");
+	});
+
+	it("getConfig should return the correct configuration", () => {
+		const sgd = new SGD(0.01);
+		const config = sgd.getConfig();
+
+		assert.deepStrictEqual(config, {
+			name: "SGD",
+			learningRate: 0.01,
+		});
+	});
 });

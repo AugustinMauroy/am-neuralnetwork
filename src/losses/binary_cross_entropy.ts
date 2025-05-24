@@ -1,3 +1,5 @@
+import { Loss } from "./loss.ts";
+
 /**
  * BinaryCrossEntropyLoss calculates the binary cross-entropy loss between predictions and target values.
  * This loss is commonly used for binary classification tasks.
@@ -14,7 +16,9 @@
  * console.log("Binary CrossEntropy Loss:", loss); // Output: ~0.1839
  * ```
  */
-export class BinaryCrossEntropyLoss {
+export class BinaryCrossEntropyLoss extends Loss {
+	public readonly name = "BinaryCrossEntropyLoss";
+
 	/**
 	 * Calculates the binary cross-entropy loss.
 	 * @param predictions An array of predicted probabilities (values between 0 and 1).

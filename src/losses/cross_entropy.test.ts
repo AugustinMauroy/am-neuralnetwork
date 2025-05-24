@@ -8,6 +8,7 @@ describe("CrossEntropyLoss", () => {
 		const predictions = [0.7, 0.2, 0.1];
 		const targets = [1, 0, 0];
 		const loss = crossEntropy.calculate(predictions, targets);
+
 		assert.strictEqual(loss, 0.1188916479791013);
 	});
 
@@ -15,6 +16,7 @@ describe("CrossEntropyLoss", () => {
 		const crossEntropy = new CrossEntropyLoss();
 		const predictions = [0.7, 0.2];
 		const targets = [1, 0, 0];
+
 		assert.throws(
 			() => {
 				crossEntropy.calculate(predictions, targets);
@@ -23,5 +25,11 @@ describe("CrossEntropyLoss", () => {
 				message: "Predictions and targets must have the same length.",
 			},
 		);
+	});
+
+	it("name should be accessible", () => {
+		const crossEntropy = new CrossEntropyLoss();
+
+		assert.strictEqual(crossEntropy.name, "CrossEntropyLoss");
 	});
 });

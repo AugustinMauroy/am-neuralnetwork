@@ -1,3 +1,5 @@
+import { Loss } from "./loss.ts";
+
 /**
  * Calculates the Mean Absolute Error (MAE) between predictions and target values.
  * MAE is defined as the average of the absolute differences between predicted and actual values.
@@ -12,7 +14,9 @@
  * console.log("MAE Loss:", loss); // MAE Loss: 0.13333333333333344
  * ```
  */
-export class MeanAbsoluteError {
+export class MeanAbsoluteError extends Loss {
+	public readonly name = "MeanAbsoluteError";
+
 	/**
 	 * Calculates the MAE loss.
 	 * @param predictions An array of predicted numerical values.

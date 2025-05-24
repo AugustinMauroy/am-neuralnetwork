@@ -3,7 +3,7 @@ import { describe, it, mock } from "node:test";
 import { Model } from "./model.ts";
 import { Dense } from "../layers/mod.ts";
 import { SGD } from "../optimizes/mod.ts";
-import { MeanSquaredError } from "../losses/mod.ts";
+import { MeanSquaredError, HuberLoss } from "../losses/mod.ts";
 import type { Layer, TrainableLayer } from "./model.ts";
 
 // Mock Layer for testing predict and evaluate logic without full layer complexities
@@ -22,6 +22,12 @@ class MockPredictLayer implements Layer {
 	getInputShape(): number[] {
 		return [Number.NaN, Number.NaN];
 	}
+	getName(): string {
+		return "MockPredictLayer";
+	}
+	getConfig(): Record<string, unknown> {
+		return {};
+	}
 }
 
 class MockEvalLayer implements Layer {
@@ -37,6 +43,12 @@ class MockEvalLayer implements Layer {
 	}
 	getInputShape(): number[] {
 		return [Number.NaN, Number.NaN];
+	}
+	getName(): string {
+		return "MockEvalLayer";
+	}
+	getConfig(): Record<string, unknown> {
+		return {};
 	}
 }
 
@@ -64,6 +76,12 @@ class MockInconsistentTrainableLayer implements TrainableLayer {
 	}
 	updateWeights(_updatedWeights: Map<string, number[] | number[][]>): void {
 		// No-op
+	}
+	getName(): string {
+		return "MockInconsistentTrainableLayer";
+	}
+	getConfig(): Record<string, unknown> {
+		return {};
 	}
 }
 
@@ -281,40 +299,6 @@ describe("Model", () => {
 		);
 	});
 
-	it("should call console.warn when save is called", () => {
-		const model = new Model();
-		const consoleWarnSpy = mock.method(console, "warn");
-		model.save("dummy/path.txt");
-		assert.strictEqual(
-			consoleWarnSpy.mock.calls.length,
-			1,
-			"console.warn should be called once",
-		);
-		assert.match(
-			consoleWarnSpy.mock.calls[0].arguments[0],
-			/Model.save\(\) is not fully implemented./,
-			"Warning message for save is incorrect",
-		);
-		consoleWarnSpy.mock.restore();
-	});
-
-	it("should call console.warn and return a new model when load is called", () => {
-		const consoleWarnSpy = mock.method(console, "warn");
-		const model = Model.load("dummy/path.txt");
-		assert.ok(model instanceof Model, "Load should return a Model instance.");
-		assert.strictEqual(
-			consoleWarnSpy.mock.calls.length,
-			1,
-			"console.warn should be called once",
-		);
-		assert.match(
-			consoleWarnSpy.mock.calls[0].arguments[0],
-			/Model.load\(\) is not fully implemented and returns a new empty model./,
-			"Warning message for load is incorrect",
-		);
-		consoleWarnSpy.mock.restore();
-	});
-
 	it("should warn if a gradient is present for a non-existent weight during fit", async () => {
 		const model = new Model();
 		model.addLayer(new MockInconsistentTrainableLayer());
@@ -411,5 +395,142 @@ describe("Model", () => {
 		);
 
 		consoleLogSpy.mock.restore();
+	});
+
+	it("getConfig should return model configuration", () => {
+		const model = new Model();
+		model.addLayer(new Dense(2, 3)); // Example Dense layer
+		model.compile(new SGD(), new HuberLoss(), ["accuracy"]);
+
+		const config = model.getConfig();
+
+		assert.ok(
+			typeof config === "object" && config !== null,
+			"getConfig should return a non-null object.",
+		);
+		assert.ok(
+			Array.isArray(config.layers),
+			"getConfig should return an object with a layers array.",
+		);
+		assert.strictEqual(
+			config.layers.length,
+			1,
+			"getConfig should return the correct number of layers.",
+		);
+		assert.strictEqual(
+			config.layers[0].name,
+			"Dense",
+			"getConfig should return the correct layer name.",
+		);
+		assert.strictEqual(
+			config.optimizer.name,
+			"SGD",
+			"getConfig should return the correct optimizer name.",
+		);
+		assert.strictEqual(
+			config.lossFunction.name,
+			"HuberLoss",
+			"getConfig should return the correct loss function name.",
+		);
+	});
+
+	it("Should serialize and deserialize the model correctly", () => {
+		const model = new Model();
+		model.addLayer(new Dense(2, 3)); // Example Dense layer
+		model.compile(new SGD(), new MeanSquaredError(), ["accuracy"]);
+
+		const serialized: string = model.save();
+
+		assert.ok(
+			typeof serialized === "string",
+			"Serialized model should be a string.",
+		);
+		assert.ok(
+			serialized.length > 0,
+			"Serialized model string should not be empty.",
+		);
+
+		const deserializedModel = Model.load(serialized);
+
+		assert.ok(
+			deserializedModel instanceof Model,
+			"Deserialized model should be an instance of Model.",
+		);
+		assert.deepStrictEqual(
+			deserializedModel.getLayers().length,
+			1,
+			"Deserialized model should have the same number of layers.",
+		);
+	});
+
+	describe("Model.load error handling", () => {
+		it("should throw error if layer class not found during load", () => {
+			const modelJson = JSON.stringify({
+				layers: [{ name: "NonExistentLayer", config: {} }],
+				optimizer: { name: "SGD", config: { learningRate: 0.01 } },
+				lossFunction: {
+					name: "HuberLoss",
+					config: {
+						delta: 1.0,
+					},
+				},
+				metrics: [],
+			});
+
+			assert.throws(
+				() => Model.load(modelJson),
+				"Error: Loss function class NonExistentLoss not found.",
+			);
+		});
+
+		it("should work with a loss function that didn't have config", () => {
+			const modelJson = JSON.stringify({
+				layers: [{ name: "Dense", config: { inputUnits: 1, outputUnits: 1 } }],
+				optimizer: { name: "SGD", config: { learningRate: 0.01 } },
+				lossFunction: { name: "MeanSquaredError" },
+				metrics: [],
+			});
+
+			const model = Model.load(modelJson);
+
+			assert.ok(model instanceof Model, "Model should be loaded successfully.");
+			assert.strictEqual(
+				model.getLayers().length,
+				1,
+				"Model should have one layer after loading.",
+			);
+			assert.strictEqual(
+				model.getLayers()[0].getName(),
+				"Dense",
+				"Loaded layer should be a Dense layer.",
+			);
+		});
+
+		it("should throw error if optimizer class not found during load", () => {
+			const modelJson = JSON.stringify({
+				layers: [{ name: "Dense", config: { inputUnits: 1, outputUnits: 1 } }],
+				optimizer: { name: "NonExistentOptimizer", config: {} },
+				lossFunction: { name: "MeanSquaredError", config: {} },
+				metrics: [],
+			});
+
+			assert.throws(
+				() => Model.load(modelJson),
+				/Optimizer class NonExistentOptimizer not found./,
+			);
+		});
+
+		it("should throw error if loss function class not found during load", () => {
+			const modelJson = JSON.stringify({
+				layers: [{ name: "Dense", config: { inputUnits: 1, outputUnits: 1 } }],
+				optimizer: { name: "SGD", config: { learningRate: 0.01 } },
+				lossFunction: { name: "NonExistentLoss", config: {} },
+				metrics: [],
+			});
+
+			assert.throws(() => Model.load(modelJson), {
+				message: "Loss function class NonExistentLoss not found.",
+			});
+		});
 	});
 });
