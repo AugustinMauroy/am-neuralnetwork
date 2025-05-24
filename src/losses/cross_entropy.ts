@@ -15,6 +15,8 @@
  * ```
  */
 export class CrossEntropyLoss {
+	public readonly name = "CrossEntropyLoss";
+
 	/**
 	 * Calculates the cross-entropy loss.
 	 * @param predictions An array of predicted probabilities (must sum to 1).

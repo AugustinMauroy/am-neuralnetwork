@@ -19,6 +19,18 @@ export interface Layer {
 	 * Signature might need adjustment for specific layer needs.
 	 */
 	backward(outputGradient: number[][]): number[][];
+
+	/**
+	 * Retrieves the name of the layer.
+	 * @returns The name of the layer.
+	 */
+	getName(): string;
+
+	/**
+	 * Gets the configuration of the layer.
+	 * @returns A configuration object containing layer-specific parameters.
+	 */
+	getConfig(): Record<string, unknown>;
 }
 
 /**
@@ -385,29 +397,6 @@ export class Model {
 		}
 
 		return results;
-	}
-
-	/**
-	 * Saves the model's architecture, weights, and optimizer state.
-	 * Note: This method is not fully implemented.
-	 * @param filePath The path where the model will be saved.
-	 */
-	public save(_filePath: string): void {
-		console.warn("Model.save() is not fully implemented.");
-	}
-
-	/**
-	 * Loads a model from a file.
-	 * Note: This method is not fully implemented and returns a new empty model.
-	 * @param _filePath The path from which to load the model.
-	 * @returns A new {@link Model} instance (currently empty).
-	 */
-	public static load(_filePath: string): Model {
-		console.warn(
-			"Model.load() is not fully implemented and returns a new empty model.",
-		);
-
-		return new Model();
 	}
 }
 

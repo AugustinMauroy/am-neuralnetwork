@@ -13,6 +13,8 @@
  * ```
  */
 export class MeanAbsoluteError {
+	public readonly name = "MeanAbsoluteError";
+
 	/**
 	 * Calculates the MAE loss.
 	 * @param predictions An array of predicted numerical values.

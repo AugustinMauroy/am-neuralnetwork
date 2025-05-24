@@ -7,7 +7,9 @@ describe("HuberLoss", () => {
 		const yTrue = [1, 2, 3];
 		const yPred = [1, 2, 3];
 		const huber = new HuberLoss(1.0);
+
 		const result = huber.calculate(yPred, yTrue);
+
 		assert.strictEqual(result, 0);
 	});
 
@@ -15,9 +17,11 @@ describe("HuberLoss", () => {
 		const yTrue = [1, 2, 3];
 		const yPred = [1.1, 1.2, 2.9];
 		const huber = new HuberLoss(1.0);
+
 		const result = huber.calculate(yPred, yTrue);
 		// Approximate MSE since all differences < delta
 		const expected = (0.5 * 0.1 ** 2 + 0.5 * 0.8 ** 2 + 0.5 * 0.1 ** 2) / 3;
+
 		assert.ok(Math.abs(result - expected) < 1e-10);
 	});
 
@@ -26,8 +30,11 @@ describe("HuberLoss", () => {
 		const yPred = [3];
 		const delta = 1.0;
 		const huber = new HuberLoss(delta);
+
 		const result = huber.calculate(yPred, yTrue);
+
 		const expected = delta * (Math.abs(3 - 0) - 0.5 * delta); // 1 * (3 - 0.5)
+
 		assert.strictEqual(result, expected);
 	});
 
@@ -35,6 +42,7 @@ describe("HuberLoss", () => {
 		const yTrue = [1, 2];
 		const yPred = [1, 2, 3];
 		const huber = new HuberLoss(1.0);
+
 		assert.throws(
 			() => {
 				huber.calculate(yPred, yTrue);
@@ -47,7 +55,31 @@ describe("HuberLoss", () => {
 
 	it("should return 0 for empty arrays", () => {
 		const huber = new HuberLoss(1.0);
+
 		const result = huber.calculate([], []);
+
 		assert.strictEqual(result, 0);
+	});
+
+	it("name should be accessible", () => {
+		const huber = new HuberLoss(1.0);
+
+		assert.strictEqual(huber.name, "HuberLoss");
+	});
+
+	it("delta should be set correctly", () => {
+		const delta = 1.5;
+		const huber = new HuberLoss(delta);
+
+		assert.strictEqual(huber.delta, delta);
+	});
+
+	it("getConfig should return the correct configuration", () => {
+		const delta = 1.5;
+		const huber = new HuberLoss(delta);
+
+		const config = huber.getConfig();
+
+		assert.deepStrictEqual(config, { delta });
 	});
 });

@@ -7,7 +7,9 @@ describe("MeanSquaredError", () => {
 		const yTrue = [1, 2, 3];
 		const yPred = [1, 2, 3];
 		const mse = new MeanSquaredError();
+
 		const result = mse.calculate(yTrue, yPred);
+
 		assert.strictEqual(result, 0);
 	});
 
@@ -15,14 +17,18 @@ describe("MeanSquaredError", () => {
 		const yTrue = [1, 2, 3];
 		const yPred = [4, 5, 6];
 		const mse = new MeanSquaredError();
+
 		const result = mse.calculate(yTrue, yPred);
+
 		assert.strictEqual(result, 9);
 	});
 
 	it("should throw an error for different length arrays", () => {
 		const yTrue = [1, 2, 3];
 		const yPred = [1, 2];
+
 		const mse = new MeanSquaredError();
+
 		assert.throws(
 			() => {
 				mse.calculate(yTrue, yPred);
@@ -37,7 +43,14 @@ describe("MeanSquaredError", () => {
 		const yTrue: number[] = [];
 		const yPred: number[] = [];
 		const mse = new MeanSquaredError();
+
 		const result = mse.calculate(yTrue, yPred);
+		
 		assert.strictEqual(result, 0);
+	});
+
+	it("name should be accessible", () => {
+		const mse = new MeanSquaredError();
+		assert.strictEqual(mse.name, "MeanSquaredError");
 	});
 });

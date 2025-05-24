@@ -16,6 +16,8 @@
  * ```
  */
 export class HingeLoss {
+	public readonly name = "HingeLoss";
+
 	/**
 	 * Calculates the Hinge loss.
 	 * @param predictions An array of predicted numerical scores.

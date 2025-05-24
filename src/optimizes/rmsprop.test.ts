@@ -28,4 +28,22 @@ describe("RMSprop Optimizer", () => {
 		assert.notStrictEqual(updatedWeights.get("w1"), weights.get("w1"));
 		assert.notStrictEqual(updatedWeights.get("w2"), weights.get("w2"));
 	});
+
+	it("getName should return 'RMSprop'", () => {
+		const rmsprop = new RMSprop();
+		
+		assert.strictEqual(rmsprop.getName(), "RMSprop");
+	});
+
+	it("getConfig should return the correct configuration", () => {
+		const rmsprop = new RMSprop(0.01, 0.9, 1e-8);
+		const config = rmsprop.getConfig();
+
+		assert.deepStrictEqual(config, {
+			name: "RMSprop",
+			learningRate: 0.01,
+			decayRate: 0.9,
+			epsilon: 1e-8,
+		});
+	});
 });

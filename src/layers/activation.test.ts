@@ -40,6 +40,19 @@ describe("Activation Layers", () => {
 		});
 	});
 
+	it("Relu getName", () => {
+		const relu = new ReLU();
+		
+		assert.strictEqual(relu.getName(), "ReLU");
+	});
+
+	it("ReLU getConfig", () => {
+		const relu = new ReLU();
+		const config = relu.getConfig();
+
+		assert.deepStrictEqual(config, { name: "ReLU" });
+	});
+
 	it("Tanh forward and backward pass", () => {
 		const tanh = new Tanh();
 		const input = [

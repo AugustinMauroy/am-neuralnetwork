@@ -19,6 +19,24 @@ export abstract class Activation implements Layer {
 	 * @returns The gradient of the loss with respect to the input of this layer, a 2D array of numbers (batchSize x inputSize).
 	 */
 	abstract backward(outputGradient: number[][]): number[][];
+
+	/**
+	 * Returns the type of the layer.
+	 * @returns A string representing the type of the layer.
+	 */
+	getName(): string {
+		return this.constructor.name;
+	}
+
+	/**
+	 * Returns the type of this layer.
+	 * @returns The type of the layer, which is "activation".
+	 */
+	getConfig(): Record<string, unknown> {
+		return {
+			name: this.getName(),
+		};
+	}
 }
 
 /**

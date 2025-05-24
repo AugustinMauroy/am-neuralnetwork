@@ -24,4 +24,18 @@ export abstract class Optimizer {
 		params: Map<string, number>,
 		grads: Map<string, number>,
 	): unknown;
+
+	/**
+	 * Returns the name of the optimizer.
+	 * This method must be implemented by subclasses.
+	 * @returns The name of the optimizer.
+	 */
+	abstract getName(): string;
+
+	/**
+	 * Returns the configuration of the optimizer.
+	 * This method provides the name and learning rate of the optimizer.
+	 * @returns An object containing the optimizer's name and learning rate.
+	 * */
+	abstract getConfig(): Record<string, unknown>
 }

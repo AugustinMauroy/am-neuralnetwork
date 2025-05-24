@@ -15,6 +15,8 @@
  * ```
  */
 export class BinaryCrossEntropyLoss {
+	public readonly name = "BinaryCrossEntropyLoss";
+
 	/**
 	 * Calculates the binary cross-entropy loss.
 	 * @param predictions An array of predicted probabilities (values between 0 and 1).

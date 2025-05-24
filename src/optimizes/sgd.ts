@@ -45,4 +45,23 @@ export class SGD extends Optimizer {
 
 		return updatedWeights;
 	}
+
+	/**
+	 * Returns the name of the optimizer.
+	 * @returns The name of the optimizer, which is "SGD".
+	 */
+	public getName(): string {
+		return "SGD";
+	}
+
+	/**
+	 * Returns the configuration of the SGD optimizer.
+	 * @returns An object containing the name and learning rate of the optimizer.
+	 */
+	public getConfig(): Record<string, unknown> {
+		return {
+			name: this.getName(),
+			learningRate: this.learningRate,
+		};
+	}
 }

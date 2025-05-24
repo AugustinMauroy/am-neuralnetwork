@@ -30,4 +30,23 @@ describe("Adam Optimizer", () => {
 		assert.notStrictEqual(updatedWeights.get("w1"), weights.get("w1"));
 		assert.notStrictEqual(updatedWeights.get("w2"), weights.get("w2"));
 	});
+
+	it("getName should return 'Adam'", () => {
+		const adam = new Adam();
+		
+		assert.strictEqual(adam.getName(), "Adam");
+	});
+
+	it("getConfig should return the correct configuration", () => {
+		const adam = new Adam(0.01, 0.9, 0.999, 1e-8);
+		const config = adam.getConfig();
+
+		assert.deepStrictEqual(config, {
+			name: "Adam",
+			learningRate: 0.01,
+			beta1: 0.9,
+			beta2: 0.999,
+			epsilon: 1e-8,
+		});
+	});
 });

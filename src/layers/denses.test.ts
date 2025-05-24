@@ -344,4 +344,21 @@ describe("Dense Layer", () => {
 			/Dimension mismatch/,
 		);
 	});
+
+	it("getName should return the correct layer name", () => {
+		const layer = new Dense(3, 2);
+
+		assert.strictEqual(layer.getName(), "Dense");
+	});
+
+	it("getConfig should return the correct layer configuration", () => {
+		const layer = new Dense(3, 2);
+		const config = layer.getConfig();
+		
+		assert.deepStrictEqual(config, {
+			name: "Dense",
+			inputUnits: 3,
+			outputUnits: 2,
+		});
+	});
 });

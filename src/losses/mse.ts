@@ -13,6 +13,8 @@
  * ```
  */
 export class MeanSquaredError {
+	public readonly name = "MeanSquaredError";
+
 	/**
 	 * Calculates the MSE loss.
 	 * @param predictions An array of predicted numerical values.

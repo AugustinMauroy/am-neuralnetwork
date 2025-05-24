@@ -22,6 +22,12 @@ class MockPredictLayer implements Layer {
 	getInputShape(): number[] {
 		return [Number.NaN, Number.NaN];
 	}
+	getName(): string {
+		return "MockPredictLayer";
+	}
+	getConfig(): Record<string, unknown> {
+		return {};
+	}
 }
 
 class MockEvalLayer implements Layer {
@@ -37,6 +43,12 @@ class MockEvalLayer implements Layer {
 	}
 	getInputShape(): number[] {
 		return [Number.NaN, Number.NaN];
+	}
+	getName(): string {
+		return "MockEvalLayer";
+	}
+	getConfig(): Record<string, unknown> {
+		return {};
 	}
 }
 
@@ -64,6 +76,12 @@ class MockInconsistentTrainableLayer implements TrainableLayer {
 	}
 	updateWeights(_updatedWeights: Map<string, number[] | number[][]>): void {
 		// No-op
+	}
+	getName(): string {
+		return "MockInconsistentTrainableLayer";
+	}
+	getConfig(): Record<string, unknown> {
+		return {};
 	}
 }
 
@@ -281,40 +299,6 @@ describe("Model", () => {
 		);
 	});
 
-	it("should call console.warn when save is called", () => {
-		const model = new Model();
-		const consoleWarnSpy = mock.method(console, "warn");
-		model.save("dummy/path.txt");
-		assert.strictEqual(
-			consoleWarnSpy.mock.calls.length,
-			1,
-			"console.warn should be called once",
-		);
-		assert.match(
-			consoleWarnSpy.mock.calls[0].arguments[0],
-			/Model.save\(\) is not fully implemented./,
-			"Warning message for save is incorrect",
-		);
-		consoleWarnSpy.mock.restore();
-	});
-
-	it("should call console.warn and return a new model when load is called", () => {
-		const consoleWarnSpy = mock.method(console, "warn");
-		const model = Model.load("dummy/path.txt");
-		assert.ok(model instanceof Model, "Load should return a Model instance.");
-		assert.strictEqual(
-			consoleWarnSpy.mock.calls.length,
-			1,
-			"console.warn should be called once",
-		);
-		assert.match(
-			consoleWarnSpy.mock.calls[0].arguments[0],
-			/Model.load\(\) is not fully implemented and returns a new empty model./,
-			"Warning message for load is incorrect",
-		);
-		consoleWarnSpy.mock.restore();
-	});
-
 	it("should warn if a gradient is present for a non-existent weight during fit", async () => {
 		const model = new Model();
 		model.addLayer(new MockInconsistentTrainableLayer());
@@ -411,5 +395,36 @@ describe("Model", () => {
 		);
 
 		consoleLogSpy.mock.restore();
+	});
+
+	it("Should serialize and deserialize the model correctly", { skip: "Not implemented yet" }, () => {
+		const model = new Model();
+		model.addLayer(new Dense(2, 3)); // Example Dense layer
+		model.compile(new SGD(), new MeanSquaredError(), ["accuracy"]);
+
+		// @ts-expect-error - not implemented yet
+		const serialized: string = model.save();
+
+		assert.ok(
+			typeof serialized === "string",
+			"Serialized model should be a string.",
+		);
+		assert.ok(
+			serialized.length > 0,
+			"Serialized model string should not be empty.",
+		);
+
+		// @ts-expect-error - not implemented yet
+		const deserializedModel = Model.load(serialized);
+
+		assert.ok(
+			deserializedModel instanceof Model,
+			"Deserialized model should be an instance of Model.",
+		);
+		assert.deepStrictEqual(
+			deserializedModel.getLayers().length,
+			1,
+			"Deserialized model should have the same number of layers.",
+		);
 	});
 });

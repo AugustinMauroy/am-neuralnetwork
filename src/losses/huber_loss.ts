@@ -14,7 +14,8 @@
  * ```
  */
 export class HuberLoss {
-	private readonly delta: number;
+	public readonly name = "HuberLoss";
+	public readonly delta: number;
 
 	constructor(delta = 1.0) {
 		this.delta = delta;
@@ -49,5 +50,15 @@ export class HuberLoss {
 		}
 
 		return totalLoss / predictions.length;
+	}
+
+	/**
+	 * Returns the configuration of the Huber Loss.
+	 * @returns An object containing the delta value.
+	 * */
+	getConfig(): Record<string, number> {
+		return {
+			delta: this.delta,
+		};
 	}
 }
