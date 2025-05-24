@@ -413,10 +413,9 @@ export class Model {
 				config: layer.getConfig(),
 			})),
 			optimizer: this.optimizer.getConfig(),
-			lossFunction:
-				this.lossFunction.getConfig === undefined
-					? { name: this.lossFunction.constructor.name }
-					: this.lossFunction.getConfig(),
+			lossFunction: typeof this.lossFunction.getConfig === "function"
+				? this.lossFunction.getConfig()
+				: { name: this.lossFunction.name },
 			metrics: this.metrics,
 		};
 	}
