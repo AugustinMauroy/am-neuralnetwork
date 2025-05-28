@@ -28,7 +28,7 @@ Constructing a neural network with `@am/neuralnetwork` involves a few key steps:
     ```
 3.  **Compile the Model**: Configure the learning process by specifying an optimizer, a loss function, and optionally, metrics.
     ```typescript
-    import { Adam } from "@am/neuralnetwork/optimizers";
+    import { Adam } from "@am/neuralnetwork/optimizes";
     import { MeanSquaredError } from "@am/neuralnetwork/losses";
     model.compile(
         new Adam(0.01),
@@ -65,7 +65,7 @@ Here's a simple example of how to use `@am/neuralnetwork` to create a neural net
 import { Model } from "@am/neuralnetwork";
 import { Dense } from "@am/neuralnetwork/layers";
 import { ReLU, Sigmoid } from "@am/neuralnetwork/layers";
-import { Adam } from "@am/neuralnetwork/optimizers";
+import { Adam } from "@am/neuralnetwork/optimizes";
 import { MeanSquaredError } from "@am/neuralnetwork/losses";
 
 // 1. Define the model
