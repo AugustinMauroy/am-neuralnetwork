@@ -50,7 +50,7 @@ Constructing a neural network with `@am/neuralnetwork` involves a few key steps:
     const newData = [[0, 0], [0, 1]];
     const predictions = model.predict(newData);
     ```
-7.  **Evaluate the Model**: (Conceptually) Use the `evaluate` method with validation data and labels to assess the model's performance.
+7.  **Evaluate the Model**: Use the `evaluate` method with validation data and labels to assess the model's performance.
     ```typescript
     const validationData = [[0, 0], [0, 1]];
     const validationLabels = [[0], [1]];
@@ -86,7 +86,7 @@ model.compile(
 	["accuracy"], // Placeholder for metrics, as evaluation logic is not fully implemented
 );
 
-// 4. Prepare training data (conceptual)
+// 4. Prepare training data
 // trainingData would be an array of input samples, e.g., number[][]
 // trainingLabels would be an array of corresponding output labels, e.g., number[][]
 const trainingData = [
@@ -97,12 +97,12 @@ const trainingData = [
 ];
 const trainingLabels = [[0], [1], [1], [0]];
 
-// 5. Train the model (conceptual, as `fit` is not fully implemented)
+// 5. Train the model
 console.log(
-	"Starting model training (conceptual, `fit` may not be fully implemented)...",
+	"Starting model training...",
 );
 await model.fit(trainingData, trainingLabels, 10000, 4, false);
-console.log("Model training finished (conceptually).");
+console.log("Model training finished.");
 
 // 6. Make predictions
 // someNewData would be an array of new input samples, e.g., number[][]
@@ -126,7 +126,7 @@ if (someNewData.length > 0) {
 	console.log("No data provided for prediction in this example.");
 }
 
-// 7. Evaluate the model (conceptual, as `evaluate` is not fully implemented)
+// 7. Evaluate the model
 const validationData: number[][] = [
 	[0, 0],
 	[0, 1],

@@ -113,5 +113,5 @@ if (valFeatures.length > 0) {
 // 6. Evaluate the model
 if (valFeatures.length > 0) {
 	const evaluation = model.evaluate(valFeatures, valLabels);
-	console.log("\nModel Evaluation (conceptual):", evaluation);
+	console.log("\nModel Evaluation:", evaluation);
 }

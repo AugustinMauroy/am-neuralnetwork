@@ -212,10 +212,7 @@ await model.fit(trainingData, trainingLabels, epochs, batchSize, true);
 if (testData.length > 0 && testLabels.length > 0) {
 	console.log("\nEvaluating model...");
 	const evaluation = model.evaluate(testData, testLabels);
-	console.log(
-		"Model Evaluation (conceptual, built-in accuracy is for binary):",
-		evaluation,
-	);
+	console.log("Model Evaluation:", evaluation);
 
 	// Example of detailed prediction check for a few samples
 	const numSamplesToCheck = Math.min(5, testData.length);

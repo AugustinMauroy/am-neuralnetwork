@@ -18,7 +18,7 @@ model.addLayer(new Dense(8, 1)); // Hidden layer (8 neurons) to output layer (1 
 model.compile(
 	new SGD(0.001), // SGD optimizer with a learning rate of 0.001
 	new MeanSquaredError(), // Mean Squared Error loss function
-	["mse"], // Using 'mse' as a metric key (conceptual)
+	["mse"], // Using 'mse' as a metric key
 );
 
 // 4. Prepare training data
@@ -27,13 +27,11 @@ model.compile(
 const trainingData: number[][] = [[1], [2], [3], [4], [5], [6], [7], [8]];
 const trainingLabels: number[][] = [[3], [5], [7], [9], [11], [13], [15], [17]];
 
-// 5. Train the model (conceptual)
-console.log(
-	"Starting model training (conceptual, `fit` may not fully update weights)...",
-);
+// 5. Train the model
+console.log("Starting model training");
 // Using more epochs due to potentially slow convergence of SGD without full implementation
 await model.fit(trainingData, trainingLabels, 1000, 2, false);
-console.log("Model training finished (conceptually).");
+console.log("Model training finished .");
 
 // 6. Make predictions
 const testData: number[][] = [[9], [10], [0.5]];
@@ -53,12 +51,12 @@ if (testData.length > 0) {
 	console.log("No data provided for prediction in this example.");
 }
 
-// 7. Evaluate the model (conceptual)
+// 7. Evaluate the model
 const validationData: number[][] = [[11], [12]];
 const validationLabels: number[][] = [[23], [25]]; // Expected for y = 2x + 1
 if (validationData.length > 0) {
 	const evaluation = model.evaluate(validationData, validationLabels);
-	console.log("\nEvaluation (conceptual):", evaluation);
+	console.log("\nEvaluation:", evaluation);
 }
 
 console.log(

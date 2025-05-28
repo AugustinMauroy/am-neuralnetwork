@@ -215,10 +215,7 @@ await model.fit(trainingData, trainingLabels, epochs, batchSize, true); // Enabl
 if (testData.length > 0 && testLabels.length > 0) {
 	console.log("\nEvaluating model...");
 	const evaluation = model.evaluate(testData, testLabels);
-	console.log(
-		"Model Evaluation (conceptual, built-in accuracy is for binary):",
-		evaluation,
-	);
+	console.log("Model Evaluation :", evaluation);
 }
 
 // 6. Use the Model for Predictions

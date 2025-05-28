@@ -46,19 +46,17 @@ model.addLayer(new Softmax()); // Softmax activation for multi-class probabiliti
 model.compile(
 	new SGD(0.01), // SGD optimizer with a learning rate of 0.01
 	new MeanSquaredError(), // Mean Squared Error loss function
-	["accuracy"], // Using 'accuracy' as a metric key (conceptual)
+	["accuracy"], // Using 'accuracy' as a metric key
 );
 
 // 4. Prepare training data
 const { data: trainingData, labels: trainingLabels } = generateAngleData(20); // 20 samples per quadrant
 
-// 5. Train the model (conceptual)
-console.log(
-	"Starting model training for quadrant classification (conceptual, `fit` may not fully update weights)...",
-);
+// 5. Train the model
+console.log("Starting model training for quadrant classification...");
 // Using a moderate number of epochs
-await model.fit(trainingData, trainingLabels, 200, 8); // 200 epochs, batch size 8, debug epochs
-console.log("Model training finished (conceptually).");
+await model.fit(trainingData, trainingLabels, 200, 8); // 200 epochs, batch size 8
+console.log("Model training finished.");
 
 // 6. Make predictions
 // Test with a few specific angles
@@ -101,11 +99,11 @@ if (testData.length > 0) {
 	console.log("No data provided for prediction in this example.");
 }
 
-// 7. Evaluate the model (conceptual)
+// 7. Evaluate the model
 const { data: validationData, labels: validationLabels } = generateAngleData(5); // 5 validation samples per quadrant
 if (validationData.length > 0) {
 	const evaluation = model.evaluate(validationData, validationLabels);
-	console.log("\nEvaluation (conceptual):", evaluation);
+	console.log("\nEvaluation:", evaluation);
 }
 
 console.log(
