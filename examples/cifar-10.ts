@@ -13,7 +13,12 @@ const CIFAR_IMAGE_SIZE =
 const CIFAR_NUM_CLASSES = 10;
 const CIFAR_RECORD_SIZE = 1 + CIFAR_IMAGE_SIZE; // 1 byte for label, 3072 for image
 
-// Function to load a single CIFAR-10 batch file
+/**
+ * Loads a single CIFAR-10 batch file.
+ * @param filePath The path to the CIFAR-10 batch file.
+ * @param numClasses The number of classes for one-hot encoding.
+ * @returns An object containing images and labels.
+ */
 function loadCifarBatch(
 	filePath: string,
 	numClasses: number,
@@ -56,7 +61,11 @@ function loadCifarBatch(
 	return { images, labels };
 }
 
-// Function to load multiple CIFAR-10 batch files (for training data)
+/**
+ * @param batchFilePaths An array of file paths to CIFAR-10 batch files.
+ * @param numClasses The number of classes for one-hot encoding.
+ * @returns An object containing the loaded images and labels.
+ */
 function loadCifarDataset(
 	batchFilePaths: string[],
 	numClasses: number,
@@ -145,28 +154,21 @@ let testLabels: number[][];
 let labelNames: string[];
 
 try {
-	console.log("Loading CIFAR-10 label names...");
 	labelNames = loadLabelNames(BATCHES_META_PATH);
 	if (labelNames.length !== CIFAR_NUM_CLASSES) {
-		console.warn(
-			`Expected ${CIFAR_NUM_CLASSES} label names, but found ${labelNames.length}. Using provided names.`,
+		throw new Error(
+			`Expected ${CIFAR_NUM_CLASSES} label names, but found ${labelNames.length}. Check the batches.meta.txt file.`,
 		);
 	}
 	console.log(`Loaded label names: ${labelNames.join(", ")}`);
 
-	console.log("Loading CIFAR-10 training data...");
 	const trainDataset = loadCifarDataset(DATA_BATCH_PATHS, CIFAR_NUM_CLASSES);
 	trainingData = trainDataset.images;
 	trainingLabels = trainDataset.labels;
-	console.log(
-		`Loaded ${trainingData.length} total training images and ${trainingLabels.length} total training labels.`,
-	);
-
-	console.log("Loading CIFAR-10 test data...");
-	// Test data is a single batch file, so pass it as an array to loadCifarDataset
 	const testDataset = loadCifarDataset([TEST_BATCH_PATH], CIFAR_NUM_CLASSES);
 	testData = testDataset.images;
 	testLabels = testDataset.labels;
+
 	console.log(
 		`Loaded ${testData.length} total test images and ${testLabels.length} total test labels.`,
 	);
@@ -179,10 +181,8 @@ try {
 }
 
 // For demonstration, let's use a small subset of the data to speed up training.
-// Remove or adjust these lines to use the full dataset.
-const subsetSizeTrain = 500; // e.g., 1000 training samples
-const subsetSizeTest = 100; // e.g., 200 test samples
-
+const subsetSizeTrain = 1000; // e.g., 1000 training samples
+const subsetSizeTest = 200; // e.g., 200 test samples
 console.warn(
 	`Using a subset of data: ${subsetSizeTrain} for training, ${subsetSizeTest} for testing.`,
 );
@@ -193,23 +193,25 @@ testLabels = testLabels.slice(0, subsetSizeTest);
 
 // 2. Define the Model (MLP)
 const model = new Model();
-model.addLayer(new Dense(CIFAR_IMAGE_SIZE, 128)); // Input layer (32*32*3=3072 features) to hidden layer (128 neurons)
+model.addLayer(new Dense(CIFAR_IMAGE_SIZE, 256));
 model.addLayer(new ReLU());
-model.addLayer(new Dense(128, CIFAR_NUM_CLASSES)); // Hidden layer to output layer (10 classes)
+model.addLayer(new Dense(256, 128));
+model.addLayer(new ReLU());
+model.addLayer(new Dense(128, CIFAR_NUM_CLASSES));
 model.addLayer(new Softmax());
 
 // 3. Compile the Model
 model.compile(
-	new Adam(0.001), // Adam optimizer
+	new Adam(0.0005), // Adam optimizer with a potentially smaller learning rate
 	new CrossEntropyLoss(), // Cross-entropy loss for multi-class classification
 	["accuracy"], // Metric
 );
 
 // 4. Train the Model
 console.log("Starting model training...");
-const epochs = 5; // Adjust epochs as needed
-const batchSize = 32; // Adjust batch size based on memory and performance
-await model.fit(trainingData, trainingLabels, epochs, batchSize, true); // Enable debugEpochEnabled
+const epochs = 5;
+const batchSize = 64;
+await model.fit(trainingData, trainingLabels, epochs, batchSize, true);
 
 // 5. Evaluate the Model
 if (testData.length > 0 && testLabels.length > 0) {

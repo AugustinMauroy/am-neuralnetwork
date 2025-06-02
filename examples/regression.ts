@@ -29,9 +29,9 @@ const trainingLabels: number[][] = [[3], [5], [7], [9], [11], [13], [15], [17]];
 
 // 5. Train the model
 console.log("Starting model training");
-// Using more epochs due to potentially slow convergence of SGD without full implementation
+// Using more epochs due to potentially slow convergence of SGD
 await model.fit(trainingData, trainingLabels, 1000, 2, false);
-console.log("Model training finished .");
+console.log("Model training finished.");
 
 // 6. Make predictions
 const testData: number[][] = [[9], [10], [0.5]];

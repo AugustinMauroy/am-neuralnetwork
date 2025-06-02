@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { styleText } from "node:util";
 import { Model } from "../src/core/mod.ts";
 import { Dense, ReLU, Softmax } from "../src/layers/mod.ts";
 import { Adam } from "../src/optimizes/mod.ts";
@@ -86,6 +87,11 @@ function loadMnistLabels(filePath: string, numClasses: number): number[][] {
 	return labels;
 }
 
+/**
+ * Displays a 28x28 MNIST image in the terminal.
+ * @param image A flattened image array (28x28 pixels).
+ * Displays the image in the terminal using ASCII characters.
+ */
 function displayImageInTerminal(image: number[]): void {
 	const width = Math.sqrt(image.length);
 	const height = width;
@@ -94,7 +100,16 @@ function displayImageInTerminal(image: number[]): void {
 	for (let i = 0; i < height; i++) {
 		for (let j = 0; j < width; j++) {
 			const pixelValue = image[i * width + j];
-			const char = pixelValue > 0.5 ? "#" : " ";
+			const char =
+				pixelValue > 0.8
+					? styleText("bgBlack", " ")
+					: pixelValue > 0.6
+						? styleText("bgGray", " ")
+						: pixelValue > 0.4
+							? styleText("bgWhite", " ")
+							: pixelValue > 0.2
+								? styleText("bgWhiteBright", " ")
+								: " ";
 			output += char;
 		}
 		output += "\n";
@@ -147,8 +162,8 @@ try {
 
 // For demonstration, let's use a small subset of the data to speed up training.
 // Remove or adjust these lines to use the full dataset.
-const subsetSizeTrain = 1000; // e.g., 1000 training samples
-const subsetSizeTest = 200; // e.g., 200 test samples
+const subsetSizeTrain = 2000;
+const subsetSizeTest = 200;
 
 if (trainingData.length > subsetSizeTrain && testData.length > subsetSizeTest) {
 	console.warn(
@@ -167,7 +182,7 @@ if (trainingData.length > subsetSizeTrain && testData.length > subsetSizeTest) {
 // 2. Define the Model (MLP)
 const model = new Model();
 model.addLayer(new Dense(MNIST_IMAGE_SIZE, 128)); // Input layer (28*28=784 features) to hidden layer (128 neurons)
-model.addLayer(new ReLU());
+model.addLayer(new ReLU()); // ReLU activation for hidden layer
 model.addLayer(new Dense(128, MNIST_NUM_CLASSES)); // Hidden layer to output layer (10 classes for digits 0-9)
 model.addLayer(new Softmax()); // Softmax for multi-class probability output
 
@@ -180,8 +195,8 @@ model.compile(
 
 // 4. Train the Model
 console.log("Starting model training...");
-const epochs = 5; // Adjust epochs as needed
-const batchSize = 32; // Adjust batch size based on memory and performance
+const epochs = 5;
+const batchSize = 32;
 await model.fit(trainingData, trainingLabels, epochs, batchSize, true); // Enable debugEpochEnabled
 
 // 5. Evaluate the Model
@@ -192,33 +207,15 @@ if (testData.length > 0 && testLabels.length > 0) {
 		"Model Evaluation (Note: built-in accuracy in model.evaluate is for binary classification):",
 		evaluation,
 	);
-
-	// Manual accuracy calculation for multi-class
-	const predictions = model.predict(testData);
-	let correctPredictions = 0;
-	for (let i = 0; i < predictions.length; i++) {
-		const predictedLabel = predictions[i].indexOf(Math.max(...predictions[i]));
-		const actualLabel = testLabels[i].indexOf(1);
-		if (predictedLabel === actualLabel) {
-			correctPredictions++;
-		}
-	}
-	const multiClassAccuracy = correctPredictions / testData.length;
-	console.log(
-		`Multi-class Accuracy on Test Set: ${multiClassAccuracy.toFixed(4)}`,
-	);
 }
 
 // 6. Use the Model for Predictions (Example for a few test samples)
-if (testData.length > 0) {
-	console.log("\nExample predictions on test data (first 10 samples):");
-	const numSamplesToDisplay = Math.min(10, testData.length);
-	const samplePredictions = model.predict(
-		testData.slice(0, numSamplesToDisplay),
-	);
+if (testData.length > 0 && testLabels.length > 0) {
+	console.log(`\nExample predictions on test data ${subsetSizeTest}:`);
 
-	for (let i = 0; i < numSamplesToDisplay; i++) {
-		const prediction = samplePredictions[i];
+	// Take 10 samples from the test set for demonstration
+	for (let i = 0; i < 10; i++) {
+		const prediction = model.predict([testData[i]])[0]; // Get prediction for the i-th test sample
 		const predictedLabel = prediction.indexOf(Math.max(...prediction));
 		const actualLabel = testLabels[i].indexOf(1); // Get the index of the '1' in one-hot encoded label
 

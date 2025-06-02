@@ -15,25 +15,27 @@ Constructing a neural network with `@am/neuralnetwork` involves a few key steps:
 1.  **Define the Model**: Instantiate the `Model` class.
     ```typescript
     import { Model } from "@am/neuralnetwork";
+
     const model = new Model();
     ```
 2.  **Add Layers**: Add layers to the model. This includes dense layers for computation and activation layers like ReLU or Sigmoid.
     ```typescript
     import { Dense, ReLU, Sigmoid } from "@am/neuralnetwork/layers";
-    // Example:
-    model.addLayer(new Dense(2, 2)); // Input to hidden layer
+
+    model.addLayer(new Dense(2, 4)); // Input layer (2 features) to hidden layer (4 neurons)
     model.addLayer(new ReLU());      // Activation for hidden layer
-    model.addLayer(new Dense(2, 1)); // Hidden to output layer
-    model.addLayer(new Sigmoid());   // Activation for output layer
+    model.addLayer(new Dense(4, 1)); // Hidden layer (4 neurons) to output layer (1 neuron)
+    model.addLayer(new Sigmoid());   // Sigmoid activation for binary output
     ```
 3.  **Compile the Model**: Configure the learning process by specifying an optimizer, a loss function, and optionally, metrics.
     ```typescript
     import { Adam } from "@am/neuralnetwork/optimizes";
     import { MeanSquaredError } from "@am/neuralnetwork/losses";
+    
     model.compile(
-        new Adam(0.01),
-        new MeanSquaredError(),
-        ["accuracy"], // Optional metrics
+	    new Adam(0.01), // Adam optimizer with a learning rate of 0.01
+	    new MeanSquaredError(), // Mean Squared Error loss function
+	    ["accuracy"], // Placeholder for metrics
     );
     ```
 4.  **Prepare Training Data**: Create arrays for your input samples (`trainingData`) and their corresponding output labels (`trainingLabels`).
@@ -43,7 +45,7 @@ Constructing a neural network with `@am/neuralnetwork` involves a few key steps:
     ```
 5.  **Train the Model**: Use the `fit` method to train the model on your data.
     ```typescript
-    await model.fit(trainingData, trainingLabels, 10000, 4, false); // epochs, batchSize, shuffle
+    await model.fit(trainingData, trainingLabels, 1000, 4, false); // epochs, batchSize, debug
     ```
 6.  **Make Predictions**: Use the `predict` method with new input data to get predictions from the trained model.
     ```typescript
@@ -73,9 +75,9 @@ const model = new Model();
 
 // 2. Add layers
 // XOR problem: 2 input neurons, e.g., 2 hidden neurons, 1 output neuron
-model.addLayer(new Dense(2, 2)); // Input layer (2 features) to hidden layer (2 neurons)
+model.addLayer(new Dense(2, 4)); // Input layer (2 features) to hidden layer (4 neurons)
 model.addLayer(new ReLU()); // Activation for hidden layer
-model.addLayer(new Dense(2, 1)); // Hidden layer (2 neurons) to output layer (1 neuron)
+model.addLayer(new Dense(4, 1)); // Hidden layer (4 neurons) to output layer (1 neuron)
 model.addLayer(new Sigmoid()); // Sigmoid activation for binary output
 
 // 3. Compile the model
@@ -83,7 +85,7 @@ model.addLayer(new Sigmoid()); // Sigmoid activation for binary output
 model.compile(
 	new Adam(0.01), // Adam optimizer with a learning rate of 0.01
 	new MeanSquaredError(), // Mean Squared Error loss function
-	["accuracy"], // Placeholder for metrics, as evaluation logic is not fully implemented
+	["accuracy"], // Placeholder for metrics
 );
 
 // 4. Prepare training data
@@ -99,9 +101,9 @@ const trainingLabels = [[0], [1], [1], [0]];
 
 // 5. Train the model
 console.log(
-	"Starting model training...",
+    "Starting model training...",
 );
-await model.fit(trainingData, trainingLabels, 10000, 4, false);
+await model.fit(trainingData, trainingLabels, 1000, 4);
 console.log("Model training finished.");
 
 // 6. Make predictions
