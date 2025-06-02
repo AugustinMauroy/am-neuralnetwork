@@ -5,7 +5,16 @@ import { Dense, ReLU, Softmax } from "../src/layers/mod.ts";
 import { Adam } from "../src/optimizes/mod.ts";
 import { MeanSquaredError } from "../src/losses/mod.ts";
 
-// Helper function to parse CSV data and prepare it for the model
+/**
+ *
+ * @param {string} filePath
+ * @returns {{
+ *  features: number[][];
+ * 	labels: number[][];
+ * 	classNames: string[];
+ * }}
+ * Loads the Iris dataset from a CSV file and returns the features, labels, and class names.
+ */
 function loadIrisData(filePath: string): {
 	features: number[][];
 	labels: number[][];
@@ -44,8 +53,7 @@ function loadIrisData(filePath: string): {
 }
 
 // 1. Prepare data
-// Load the full dataset from the CSV file
-const dataPath = "./examples/iris.csv"; // Relative path to the CSV file
+const dataPath = "./examples/iris.csv";
 const {
 	features: allFeatures,
 	labels: allLabels,

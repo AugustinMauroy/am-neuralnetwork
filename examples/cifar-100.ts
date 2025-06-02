@@ -10,7 +10,7 @@ const CIFAR100_IMAGE_WIDTH = 32;
 const CIFAR100_IMAGE_CHANNELS = 3;
 const CIFAR100_IMAGE_SIZE =
 	CIFAR100_IMAGE_HEIGHT * CIFAR100_IMAGE_WIDTH * CIFAR100_IMAGE_CHANNELS;
-const CIFAR100_NUM_FINE_CLASSES = 100;
+const CIFAR100_NUM_CLASSES = 100; // Renamed from CIFAR100_NUM_FINE_CLASSES
 // const CIFAR100_NUM_COARSE_CLASSES = 20; // Coarse labels are also available
 
 const CIFAR100_COARSE_LABEL_BYTES = 1;
@@ -20,7 +20,8 @@ const CIFAR100_RECORD_SIZE =
 	CIFAR100_COARSE_LABEL_BYTES + CIFAR100_FINE_LABEL_BYTES + CIFAR100_IMAGE_SIZE;
 
 // Function to load a CIFAR-100 data file (train.bin or test.bin)
-function loadCifar100File(
+function loadCifarFile(
+	// Renamed from loadCifar100File
 	filePath: string,
 	numClasses: number,
 ): { images: number[][]; labels: number[][] } {
@@ -29,7 +30,7 @@ function loadCifar100File(
 
 	if (buffer.length % CIFAR100_RECORD_SIZE !== 0) {
 		console.warn(
-			`[loadCifar100File] Warning: File "${filePath}" size (${buffer.length}) is not a multiple of record size (${CIFAR100_RECORD_SIZE}). File might be corrupted or incomplete. Expected records: ${
+			`[loadCifarFile] Warning: File "${filePath}" size (${buffer.length}) is not a multiple of record size (${CIFAR100_RECORD_SIZE}). File might be corrupted or incomplete. Expected records: ${
 				buffer.length / CIFAR100_RECORD_SIZE
 			}`,
 		);
@@ -48,7 +49,7 @@ function loadCifar100File(
 			oneHotLabel[fineLabel] = 1;
 		} else {
 			console.warn(
-				`[loadCifar100File] Warning: Fine label ${fineLabel} out of bounds for numClasses ${numClasses} in file ${filePath}`,
+				`[loadCifarFile] Warning: Fine label ${fineLabel} out of bounds for numClasses ${numClasses} in file ${filePath}`,
 			);
 		}
 		labels.push(oneHotLabel);
@@ -75,7 +76,8 @@ function loadLabelNames(filePath: string): string[] {
 			.filter((name) => name.length > 0);
 	} catch (e) {
 		console.error(`Error loading label names from ${filePath}:`, e);
-		return [];
+		// Fallback label names, similar to cifar-10.ts
+		return Array.from({ length: CIFAR100_NUM_CLASSES }, (_, i) => `Class ${i}`);
 	}
 }
 
@@ -112,8 +114,7 @@ console.log(
 // 1. Load CIFAR-100 Data
 // Ensure you have train.bin, test.bin, fine_label_names.txt, and coarse_label_names.txt
 // in the 'example/cifar-100/' directory.
-const FINE_LABEL_NAMES_PATH =
-	"./examples/cifar-100-binary/fine_label_names.txt";
+const LABEL_NAMES_PATH = "./examples/cifar-100-binary/fine_label_names.txt"; // Renamed from FINE_LABEL_NAMES_PATH
 // const COARSE_LABEL_NAMES_PATH = "./examples/cifar-100/coarse_label_names.txt";
 const TRAIN_FILE_PATH = "./examples/cifar-100-binary/train.bin";
 const TEST_FILE_PATH = "./examples/cifar-100-binary/test.bin";
@@ -122,31 +123,41 @@ let trainingData: number[][];
 let trainingLabels: number[][];
 let testData: number[][];
 let testLabels: number[][];
-let fineLabelNames: string[];
+let labelNames: string[]; // Renamed from fineLabelNames
 
 try {
-	console.log("Loading CIFAR-100 fine label names...");
-	fineLabelNames = loadLabelNames(FINE_LABEL_NAMES_PATH);
+	console.log("Loading CIFAR-100 label names...");
+	labelNames = loadLabelNames(LABEL_NAMES_PATH); // Use renamed variable
 	if (
-		fineLabelNames.length !== CIFAR100_NUM_FINE_CLASSES &&
-		fineLabelNames.length > 0
+		labelNames.length !== CIFAR100_NUM_CLASSES && // Use renamed constant
+		labelNames.length > 0
 	) {
 		console.warn(
-			`Expected ${CIFAR100_NUM_FINE_CLASSES} fine label names, but found ${fineLabelNames.length}. Using provided names.`,
+			`Expected ${CIFAR100_NUM_CLASSES} label names, but found ${labelNames.length}. Using provided names.`, // Use renamed constant
 		);
-	} else if (fineLabelNames.length === 0) {
-		console.warn("No fine label names found. Using generic names.");
-		fineLabelNames = Array.from(
-			{ length: CIFAR100_NUM_FINE_CLASSES },
-			(_, i) => `Class ${i}`,
+	} else if (labelNames.length === 0) {
+		// Fallback already handled by loadLabelNames, this ensures we use the fallback if it was triggered
+		console.warn(
+			"No label names found or error during loading. Using generic names.",
 		);
+		// If loadLabelNames returned an empty array due to an error and then the fallback,
+		// this re-assigns it. If it successfully loaded an empty file, it also assigns generic names.
+		// The updated loadLabelNames should already provide the fallback.
+		if (labelNames.length === 0) {
+			// Check again if it's still empty after loadLabelNames's attempt
+			labelNames = Array.from(
+				{ length: CIFAR100_NUM_CLASSES }, // Use renamed constant
+				(_, i) => `Class ${i}`,
+			);
+		}
 	}
-	console.log(`Loaded ${fineLabelNames.length} fine label names.`);
+	console.log(`Loaded ${labelNames.length} label names.`); // Use renamed variable
 
 	console.log("Loading CIFAR-100 training data...");
-	const trainDataset = loadCifar100File(
+	const trainDataset = loadCifarFile(
+		// Use renamed function
 		TRAIN_FILE_PATH,
-		CIFAR100_NUM_FINE_CLASSES,
+		CIFAR100_NUM_CLASSES, // Use renamed constant
 	);
 	trainingData = trainDataset.images;
 	trainingLabels = trainDataset.labels;
@@ -155,9 +166,10 @@ try {
 	);
 
 	console.log("Loading CIFAR-100 test data...");
-	const testDataset = loadCifar100File(
+	const testDataset = loadCifarFile(
+		// Use renamed function
 		TEST_FILE_PATH,
-		CIFAR100_NUM_FINE_CLASSES,
+		CIFAR100_NUM_CLASSES, // Use renamed constant
 	);
 	testData = testDataset.images;
 	testLabels = testDataset.labels;
@@ -196,7 +208,7 @@ model.addLayer(new Dense(CIFAR100_IMAGE_SIZE, 256)); // Input layer to hidden la
 model.addLayer(new ReLU());
 model.addLayer(new Dense(256, 128)); // Second hidden layer
 model.addLayer(new ReLU());
-model.addLayer(new Dense(128, CIFAR100_NUM_FINE_CLASSES)); // Hidden layer to output layer (100 classes)
+model.addLayer(new Dense(128, CIFAR100_NUM_CLASSES)); // Hidden layer to output layer (100 classes) // Use renamed constant
 model.addLayer(new Softmax());
 
 // 3. Compile the Model
@@ -231,7 +243,7 @@ if (testData.length > 0 && testLabels.length > 0) {
 			const actualClassIndex = actualLabelOneHot.indexOf(1);
 
 			console.log(
-				`Sample ${i + 1}: Predicted: ${fineLabelNames[predictedClassIndex] || `Class ${predictedClassIndex}`}, Actual: ${fineLabelNames[actualClassIndex] || `Class ${actualClassIndex}`}`,
+				`Sample ${i + 1}: Predicted: ${labelNames[predictedClassIndex] || `Class ${predictedClassIndex}`}, Actual: ${labelNames[actualClassIndex] || `Class ${actualClassIndex}`}`, // Use renamed variable
 			);
 			displayImageInTerminal(
 				testData[i],

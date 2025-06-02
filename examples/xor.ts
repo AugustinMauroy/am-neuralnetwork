@@ -9,9 +9,9 @@ const model = new Model();
 
 // 2. Add layers
 // XOR problem: 2 input neurons, e.g., 2 hidden neurons, 1 output neuron
-model.addLayer(new Dense(2, 2)); // Input layer (2 features) to hidden layer (2 neurons)
+model.addLayer(new Dense(2, 4)); // Input layer (2 features) to hidden layer (4 neurons)
 model.addLayer(new ReLU()); // Activation for hidden layer
-model.addLayer(new Dense(2, 1)); // Hidden layer (2 neurons) to output layer (1 neuron)
+model.addLayer(new Dense(4, 1)); // Hidden layer (4 neurons) to output layer (1 neuron)
 model.addLayer(new Sigmoid()); // Sigmoid activation for binary output
 
 // 3. Compile the model
@@ -19,7 +19,7 @@ model.addLayer(new Sigmoid()); // Sigmoid activation for binary output
 model.compile(
 	new Adam(0.01), // Adam optimizer with a learning rate of 0.01
 	new MeanSquaredError(), // Mean Squared Error loss function
-	["accuracy"], // Placeholder for metrics, as evaluation logic is not fully implemented
+	["accuracy"], // Placeholder for metrics
 );
 
 // 4. Prepare training data
@@ -35,7 +35,7 @@ const trainingLabels = [[0], [1], [1], [0]];
 
 // 5. Train the model
 console.log("Starting model training...");
-await model.fit(trainingData, trainingLabels, 10000, 4, false);
+await model.fit(trainingData, trainingLabels, 1000, 4);
 console.log("Model training finished.");
 
 // 6. Make predictions

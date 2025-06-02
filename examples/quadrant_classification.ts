@@ -3,7 +3,11 @@ import { Dense, ReLU, Softmax } from "../src/layers/mod.ts";
 import { SGD } from "../src/optimizes/mod.ts";
 import { MeanSquaredError } from "../src/losses/mod.ts";
 
-// Helper function to generate data
+/**
+ * Helpers to generate training data for angle classification.
+ * @param {number} numSamplesPerQuadrant
+ * @returns {Object} An object containing the generated data and labels.
+ */
 function generateAngleData(numSamplesPerQuadrant: number): {
 	data: number[][];
 	labels: number[][];
@@ -50,16 +54,15 @@ model.compile(
 );
 
 // 4. Prepare training data
-const { data: trainingData, labels: trainingLabels } = generateAngleData(20); // 20 samples per quadrant
+const { data: trainingData, labels: trainingLabels } = generateAngleData(40);
 
 // 5. Train the model
 console.log("Starting model training for quadrant classification...");
 // Using a moderate number of epochs
-await model.fit(trainingData, trainingLabels, 200, 8); // 200 epochs, batch size 8
+await model.fit(trainingData, trainingLabels, 1000, 10);
 console.log("Model training finished.");
 
 // 6. Make predictions
-// Test with a few specific angles
 const testAnglesRad = [
 	Math.PI / 4, // Q1 (45 deg)
 	(3 * Math.PI) / 4, // Q2 (135 deg)
