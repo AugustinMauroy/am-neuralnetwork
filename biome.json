@@ -1,15 +1,17 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
 	"vcs": {
 		"enabled": false,
 		"clientKind": "git",
 		"useIgnoreFile": false
 	},
-	"organizeImports": {
-		"enabled": false
+	"assist": {
+		"actions": {
+			"source": { "organizeImports": "off" }
+		}
 	},
 	"files": {
-		"include": ["**/*.js", "**/*.ts", "**/*.json"]
+		"includes": ["**/*.js", "**/*.ts", "**/*.json"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -21,6 +23,24 @@
 			"recommended": true,
 			"complexity": {
 				"noStaticOnlyClass": "warn"
+			},
+			"style": {
+				"noParameterAssign": "error",
+				"useAsConstAssertion": "error",
+				"useDefaultParameterLast": "error",
+				"useEnumInitializers": "error",
+				"useSelfClosingElements": "error",
+				"useSingleVarDeclarator": "error",
+				"noUnusedTemplateLiteral": "error",
+				"useNumberNamespace": "error",
+				"noInferrableTypes": "error",
+				"noUselessElse": "error"
+			},
+			"correctness": {
+				"noUnusedImports": "off"
+			},
+			"performance": {
+				"noDynamicNamespaceImportAccess": "off"
 			}
 		}
 	},
