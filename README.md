@@ -19,7 +19,7 @@ Constructing a neural network with `@am/neuralnetwork` involves a few key steps:
     const model = new Model();
     ```
 2.  **Add Layers**: Add layers to the model. This includes dense layers for computation and activation layers like ReLU or Sigmoid.
-    ```typescript
+    ```ts
     import { Dense, ReLU, Sigmoid } from "@am/neuralnetwork/layers";
 
     model.addLayer(new Dense(2, 4)); // Input layer (2 features) to hidden layer (4 neurons)
@@ -28,7 +28,7 @@ Constructing a neural network with `@am/neuralnetwork` involves a few key steps:
     model.addLayer(new Sigmoid());   // Sigmoid activation for binary output
     ```
 3.  **Compile the Model**: Configure the learning process by specifying an optimizer, a loss function, and optionally, metrics.
-    ```typescript
+    ```ts
     import { Adam } from "@am/neuralnetwork/optimizes";
     import { MeanSquaredError } from "@am/neuralnetwork/losses";
     
@@ -39,21 +39,21 @@ Constructing a neural network with `@am/neuralnetwork` involves a few key steps:
     );
     ```
 4.  **Prepare Training Data**: Create arrays for your input samples (`trainingData`) and their corresponding output labels (`trainingLabels`).
-    ```typescript
+    ```ts
     const trainingData = [[0, 0], [0, 1], [1, 0], [1, 1]];
     const trainingLabels = [[0], [1], [1], [0]];
     ```
 5.  **Train the Model**: Use the `fit` method to train the model on your data.
-    ```typescript
+    ```ts
     await model.fit(trainingData, trainingLabels, 1000, 4, false); // epochs, batchSize, debug
     ```
 6.  **Make Predictions**: Use the `predict` method with new input data to get predictions from the trained model.
-    ```typescript
+    ```ts
     const newData = [[0, 0], [0, 1]];
     const predictions = model.predict(newData);
     ```
 7.  **Evaluate the Model**: Use the `evaluate` method with validation data and labels to assess the model's performance.
-    ```typescript
+    ```ts
     const validationData = [[0, 0], [0, 1]];
     const validationLabels = [[0], [1]];
     const evaluation = model.evaluate(validationData, validationLabels);
@@ -63,7 +63,7 @@ Constructing a neural network with `@am/neuralnetwork` involves a few key steps:
 
 Here's a simple example of how to use `@am/neuralnetwork` to create a neural network that learns the XOR function. This example demonstrates the steps outlined above.
 
-```typescript
+```ts
 import { Model } from "@am/neuralnetwork";
 import { Dense } from "@am/neuralnetwork/layers";
 import { ReLU, Sigmoid } from "@am/neuralnetwork/layers";
