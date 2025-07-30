@@ -143,3 +143,5 @@ if (validationData.length > 0) {
 ```
 
 If you want more examples, check out the [examples](https://github.com/AugustinMauroy/am-neuralnetwork/tree/main/examples) folder.
+
+<iframe src="https://github.com/sponsors/AugustinMauroy/card" title="Sponsor AugustinMauroy" height="225" width="600" style="border: 0;"></iframe>
