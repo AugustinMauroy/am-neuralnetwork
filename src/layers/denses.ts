@@ -21,7 +21,7 @@ export class Dense implements TrainableLayer {
 	/** @hidden The biases vector of the layer. Shape: [outputUnits] */
 	private biases: number[];
 	/** @hidden Stores the input from the last forward pass, needed for backpropagation. */
-	private lastInput!: number[][];
+	//private lastInput!: number[][];
 
 	/**
 	 * Creates an instance of a Dense layer.

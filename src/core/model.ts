@@ -275,7 +275,7 @@ export class Model {
 										tempWeightMap,
 										tempGradientMap,
 									);
-									// @ts-ignore
+									// @ts-expect-error
 									// biome-ignore lint/style/noNonNullAssertion : I know what I'm doing
 									updatedParamValues.push(updatedValMap.get(weightKey)!);
 								}
@@ -304,7 +304,7 @@ export class Model {
 											tempWeightMap,
 											tempGradientMap,
 										);
-										// @ts-ignore
+										// @ts-expect-error
 										// biome-ignore lint/style/noNonNullAssertion : I know what I'm doing
 										newRow.push(updatedValMap.get(weightKey)!);
 									}
