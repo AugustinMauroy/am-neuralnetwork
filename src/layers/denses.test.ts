@@ -79,13 +79,6 @@ describe("Dense Layer", () => {
 			Math.abs(output[0][1] - 1.15) < 1e-9,
 			"Output[0][1] calculation is incorrect",
 		);
-
-		assert.deepStrictEqual(
-			// @ts-expect-error access private member for testing
-			layer.lastInput,
-			input,
-			"lastInput should be stored",
-		);
 	});
 
 	it("should perform a forward pass with batch input correctly", () => {

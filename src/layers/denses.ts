@@ -20,8 +20,6 @@ export class Dense implements TrainableLayer {
 	private weights: number[][];
 	/** @hidden The biases vector of the layer. Shape: [outputUnits] */
 	private biases: number[];
-	/** @hidden Stores the input from the last forward pass, needed for backpropagation. */
-	//private lastInput!: number[][];
 
 	/**
 	 * Creates an instance of a Dense layer.
@@ -87,7 +85,6 @@ export class Dense implements TrainableLayer {
 	 * @returns The output data from the layer. Shape: [batchSize, outputUnits]
 	 */
 	public forward(input: number[][]): number[][] {
-		this.lastInput = input; // Save input for backpropagation
 		const output: number[][] = [];
 		const batchSize = input.length;
 
