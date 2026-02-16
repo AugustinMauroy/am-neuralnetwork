@@ -143,3 +143,48 @@ if (validationData.length > 0) {
 ```
 
 If you want more examples, check out the [examples](https://github.com/AugustinMauroy/am-neuralnetwork/tree/main/examples) folder.
+
+## Feature Completeness
+
+This package is **feature complete for basic feedforward neural networks** (Multi-Layer Perceptrons), but **not feature complete as a general-purpose deep learning library**.
+
+### What's Included ✅
+
+- **Core functionality**: Model architecture with layer management, compilation, training, and evaluation
+- **Dense layers**: Fully-connected layers for feedforward networks
+- **Activation functions**: ReLU, Sigmoid, Tanh, Softmax
+- **Optimizers**: SGD, Adam, RMSprop, Adagrad
+- **Loss functions**: MSE, MAE, Cross Entropy, Binary Cross Entropy, Hinge Loss, Huber Loss
+- **Model persistence**: Save and load trained models
+
+### Current Limitations
+
+The following features are not yet implemented:
+
+1. **Layer Types**: Only Dense layers are available. Missing:
+   - Convolutional layers (CNN)
+   - Recurrent layers (LSTM, GRU)
+   - Dropout layers
+   - Batch normalization
+   - Pooling layers
+
+2. **Training Features**:
+   - Validation split during training
+   - Learning rate scheduling
+   - Early stopping
+   - Callbacks system
+   - Model checkpointing
+   - Training history tracking
+
+3. **Evaluation Metrics**: Only basic accuracy is implemented. Missing precision, recall, F1-score, confusion matrix, etc.
+
+4. **Data Processing**: No built-in data augmentation, normalization utilities, or dataset handling
+
+5. **Advanced Features**: No GPU acceleration, distributed training, transfer learning, or model visualization
+
+### Suitable For
+
+- Educational purposes and learning neural networks
+- Simple classification and regression tasks
+- Prototyping small feedforward models
+- Cross-runtime applications (Node.js, Deno, Bun, browser)
