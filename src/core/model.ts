@@ -4,6 +4,32 @@ import * as losses from "../losses/mod.ts";
 import type { Loss } from "../losses/loss.ts";
 import type { Optimizer } from "../optimizes/optimizer.ts";
 
+type LayerConstructor = new (config: Record<string, unknown>) => Layer;
+type OptimizerConstructor = new (config?: Record<string, unknown>) => Optimizer;
+type LossConstructor = new (config?: Record<string, unknown>) => Loss;
+
+type ModelLayerConfig = {
+	name: keyof typeof layers;
+	config: Record<string, unknown>;
+};
+
+type ModelOptimizerConfig = {
+	name: keyof typeof optimizers;
+	config?: Record<string, unknown>;
+};
+
+type ModelLossFunctionConfig = {
+	name: keyof typeof losses;
+	config?: Record<string, unknown>;
+};
+
+type ModelConfig = {
+	layers: ModelLayerConfig[];
+	optimizer: ModelOptimizerConfig;
+	lossFunction: ModelLossFunctionConfig;
+	metrics: string[];
+};
+
 /**
  * Represents a single layer in a neural network.
  */
@@ -443,11 +469,11 @@ export class Model {
 	 * @throws Error if a layer class is not found in the global scope.
 	 */
 	public static load(modelJson: string): Model {
-		const config = JSON.parse(modelJson);
+		const config = JSON.parse(modelJson) as ModelConfig;
 		const model = new Model();
 
 		for (const layerConfig of config.layers) {
-			const layerClass = layers[layerConfig.name];
+			const layerClass = layers[layerConfig.name] as unknown as LayerConstructor;
 
 			if (!layerClass) {
 				throw new Error(`Layer class ${layerConfig.name} not found.`);
@@ -457,13 +483,13 @@ export class Model {
 			model.addLayer(layerInstance);
 		}
 
-		const optimizerClass = optimizers[config.optimizer.name];
+		const optimizerClass = optimizers[config.optimizer.name] as unknown as OptimizerConstructor;
 
 		if (!optimizerClass) {
 			throw new Error(`Optimizer class ${config.optimizer.name} not found.`);
 		}
 
-		const lossFunctionClass = losses[config.lossFunction.name];
+		const lossFunctionClass = losses[config.lossFunction.name] as unknown as LossConstructor;
 
 		if (!lossFunctionClass) {
 			throw new Error(

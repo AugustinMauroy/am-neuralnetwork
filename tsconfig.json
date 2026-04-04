@@ -10,7 +10,8 @@
 		"sourceMap": true,
 		// Why not ESNext? Because with ES2022 we know which version of runtime(s) we are supporting
 		"target": "ES2022",
-		"verbatimModuleSyntax": true
+		"verbatimModuleSyntax": true,
+		"types": ["node"]
 	},
 	"include": ["src/**/*.ts"]
 }
