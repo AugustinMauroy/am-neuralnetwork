@@ -473,7 +473,7 @@ export class Model {
 		const model = new Model();
 
 		for (const layerConfig of config.layers) {
-			const layerClass = layers[layerConfig.name] as unknown as LayerConstructor;
+			const layerClass = layers[layerConfig.name] as LayerConstructor;
 
 			if (!layerClass) {
 				throw new Error(`Layer class ${layerConfig.name} not found.`);
@@ -483,13 +483,17 @@ export class Model {
 			model.addLayer(layerInstance);
 		}
 
-		const optimizerClass = optimizers[config.optimizer.name] as unknown as OptimizerConstructor;
+		const optimizerClass = optimizers[
+			config.optimizer.name
+		] as OptimizerConstructor;
 
 		if (!optimizerClass) {
 			throw new Error(`Optimizer class ${config.optimizer.name} not found.`);
 		}
 
-		const lossFunctionClass = losses[config.lossFunction.name] as unknown as LossConstructor;
+		const lossFunctionClass = losses[
+			config.lossFunction.name
+		] as LossConstructor;
 
 		if (!lossFunctionClass) {
 			throw new Error(
